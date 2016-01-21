@@ -11,7 +11,7 @@ sourceCompatibility = '1.7'
 // prefer. In this case NetBeans will not add these tasks but you may rely on
 // your own implementation.
 if (!hasProperty('mainClass')) {
-    ext.mainClass = 'com.lahenry.test.Greetings'
+    ext.mainClass = 'com.lahenry.nimbus.mainapp.MainGuiApp'
 }
 
 repositories {
