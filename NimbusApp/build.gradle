@@ -1,4 +1,9 @@
+plugins {
+    id "edu.sc.seis.macAppBundle" version "2.1.5"
+}
+
 apply plugin: 'java'
+apply plugin: 'application'
 
 sourceCompatibility = '1.7'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
@@ -13,6 +18,8 @@ sourceCompatibility = '1.7'
 if (!hasProperty('mainClass')) {
     ext.mainClass = 'com.lahenry.nimbus.mainapp.MainGuiApp'
 }
+
+mainClassName = 'com.lahenry.nimbus.mainapp.MainGuiApp'
 
 repositories {
     mavenCentral()
@@ -31,6 +38,7 @@ dependencies {
 
     compile 'com.google.apis:google-api-services-drive:v2-rev200-1.21.0'
     compile 'com.dropbox.core:dropbox-core-sdk:1.8.2'
+    //compile 'com.box:box-java-sdk:2.0.0'
 
 }
 
@@ -39,4 +47,10 @@ jar {
         attributes 'Main-Class': 'com.lahenry.nimbus.mainapp.MainGuiApp'
     }
     archiveName 'nimbus.jar'
+}
+
+macAppBundle {
+    // BrowserLauncher2 needs to get OSX version, but it's empty on newer OSX
+    // TODO: this could break classic osx since it's overriding the value
+    javaProperties.put("mrj.version", "3.1")
 }
