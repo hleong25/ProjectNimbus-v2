@@ -45,11 +45,11 @@ public class DropboxFileItem implements IFileItem<DbxEntry>
 
         if (m_entry.isFolder())
         {
-            path = "resources/icons/google/Close-Folder-icon-64.png";
+            path = "images/google/icon/Close-Folder-icon-64.png";
         }
         else
         {
-            path = "resources/icons/google/docs-64.png";
+            path = "images/google/icon/docs-64.png";
         }
 
         ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource(path));

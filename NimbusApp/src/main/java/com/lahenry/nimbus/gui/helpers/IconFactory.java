@@ -28,13 +28,13 @@ public class IconFactory
         switch (type)
         {
             case LOCAL_FILE_SYSTEM:
-                path = "resources/icons/local/local-%s.png";
+                path = "images/local/icon/local-%s.png";
                 break;
             case GOOGLE_DRIVE:
-                path = "resources/icons/google/drive-%s.png";
+                path = "images/google/icon/drive-%s.png";
                 break;
             case DROPBOX:
-                path = "resources/icons/dropbox/dropbox-%s.png";
+                path = "images/dropbox/icon/dropbox-%s.png";
                 break;
             default:
                 return null;

@@ -52,12 +52,12 @@ public class DefaultFileItem implements IFileItem
         switch (m_type)
         {
             case FOLDER:
-                path = "resources/icons/icon-dir.png";
+                path = "images/google/icon/Close-Folder-icon-64.png";
                 break;
 
             case FILE:
             default:
-                path = "resources/icons/icon-file.png";
+                path = "images/google/icon/docs-64.png";
                 break;
 
         }

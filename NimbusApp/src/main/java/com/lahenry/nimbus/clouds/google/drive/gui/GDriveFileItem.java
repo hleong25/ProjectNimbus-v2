@@ -51,32 +51,32 @@ public class GDriveFileItem implements IFileItem<File>
         if (m_item.getMimeType() == null)
         {
             Log.fine("Item="+m_item.getTitle()+" Mime=(null)");
-            path = "resources/icons/google/drive-64.png";
+            path = "images/google/icon/drive-64.png";
         }
         else if (m_item.getMimeType().equals(GDriveConstants.MIME_TYPE_DOCUMENT))
         {
-            path = "resources/icons/google/docs-64.png";
+            path = "images/google/icon/docs-64.png";
         }
         else if (m_item.getMimeType().equals(GDriveConstants.MIME_TYPE_FOLDER))
         {
-            path = "resources/icons/google/Close-Folder-icon-64.png";
+            path = "images/google/icon/Close-Folder-icon-64.png";
         }
         else if (m_item.getMimeType().equals(GDriveConstants.MIME_TYPE_PRESENTATION))
         {
-            path = "resources/icons/google/presentations-64.png";
+            path = "images/google/icon/presentations-64.png";
         }
         else if (m_item.getMimeType().equals(GDriveConstants.MIME_TYPE_SPREADSHEET))
         {
-            path = "resources/icons/google/spreadsheets-64.png";
+            path = "images/google/icon/spreadsheets-64.png";
         }
         else if (m_item.getMimeType().equals(GDriveConstants.MIME_TYPE_VIDEO))
         {
-            path = "resources/icons/google/video-64.gif";
+            path = "images/google/icon/video-64.gif";
         }
         else
         {
             Log.fine("Item="+m_item.getTitle()+" Mime="+m_item.getMimeType());
-            path = "resources/icons/google/drive-64.png";
+            path = "images/google/icon/drive-64.png";
         }
 
         ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource(path));
