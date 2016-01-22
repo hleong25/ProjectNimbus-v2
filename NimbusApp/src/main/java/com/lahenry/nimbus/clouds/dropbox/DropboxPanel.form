@@ -42,7 +42,7 @@
         </Component>
       </SubComponents>
     </Container>
-    <Component class="com.leong.nimbus.gui.layout.AllCardsPanel" name="pnlFiles">
+    <Component class="com.lahenry.nimbus.gui.layout.AllCardsPanel" name="pnlFiles">
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
           <BorderConstraints direction="Center"/>
