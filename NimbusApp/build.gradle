@@ -5,6 +5,8 @@ plugins {
 apply plugin: 'java'
 apply plugin: 'application'
 
+version = "1.0.0"
+
 sourceCompatibility = '1.7'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
@@ -46,11 +48,12 @@ jar {
     manifest {
         attributes 'Main-Class': 'com.lahenry.nimbus.mainapp.MainGuiApp'
     }
-    archiveName 'nimbus.jar'
 }
 
 macAppBundle {
     // BrowserLauncher2 needs to get OSX version, but it's empty on newer OSX
     // TODO: this could break classic osx since it's overriding the value
     javaProperties.put("mrj.version", "3.1")
+
+    dmgName "${project.name}-${project.version}-osx"
 }
