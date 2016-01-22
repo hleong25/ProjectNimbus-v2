@@ -23,7 +23,6 @@ public class LocalController
     {
         super(LocalController.class.getName(), new LocalModel());
 
-        this.
         LOG.entering("<init>");
 
         //m_rootFolder = m_model.getIdFromItem(getRoot());

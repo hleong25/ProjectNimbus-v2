@@ -143,7 +143,7 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
 
         if (m_xferObject != null)
         {
-            JOptionPane.showMessageDialog(this, "Transferring in progress...", AppInfo.Name, JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Transferring in progress...", AppInfo.NAME, JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
@@ -270,7 +270,7 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
 
         if (m_xferObject != null)
         {
-            JOptionPane.showMessageDialog(this, "Cannot start new transfer when transferring in progress...", AppInfo.Name, JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Cannot start new transfer when transferring in progress...", AppInfo.NAME, JOptionPane.INFORMATION_MESSAGE);
             return false;
         }
 

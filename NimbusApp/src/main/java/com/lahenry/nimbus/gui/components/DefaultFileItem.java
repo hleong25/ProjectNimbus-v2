@@ -20,8 +20,8 @@ public class DefaultFileItem implements IFileItem
         FILE;
     }
 
-    private FileType m_type;
-    private String m_label;
+    private final FileType m_type;
+    private final String m_label;
 
     private DefaultFileItem(FileType type, String label)
     {

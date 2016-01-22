@@ -166,7 +166,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         //Create a new authorized API client
         LOG.fine("Creating the new Google Drive client");
         m_service = new Drive.Builder(httpTransport, jsonFactory, credential)
-            .setApplicationName(AppInfo.Name)
+            .setApplicationName(AppInfo.NAME)
             .build();
 
         try

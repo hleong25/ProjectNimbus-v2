@@ -28,8 +28,6 @@ public class NimbusFrame extends javax.swing.JFrame
 
     private final Runnable m_run;
 
-    private final List<ICloudPanel<?, ?>> m_cloudPanels = new ArrayList<>();
-
     /**
      * Creates new form NimbusFrame
      */
@@ -37,10 +35,6 @@ public class NimbusFrame extends javax.swing.JFrame
     {
         LOG.entering("<init>");
         initComponents();
-
-        m_cloudPanels.add(pnlLocal);
-        m_cloudPanels.add(pnlGoogleDrive);
-        m_cloudPanels.add(pnlDropbox);
 
         m_run = new Runnable()
         {
@@ -202,7 +196,7 @@ public class NimbusFrame extends javax.swing.JFrame
     @Override
     public void setTitle(String title)
     {
-        final String APP_NAME = " - " + AppInfo.Name;
+        final String APP_NAME = " - " + AppInfo.NAME;
 
         if (title.endsWith(APP_NAME))
             super.setTitle(title);

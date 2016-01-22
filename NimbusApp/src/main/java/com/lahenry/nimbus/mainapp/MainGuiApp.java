@@ -35,7 +35,7 @@ public class MainGuiApp
         {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels())
             {
-                if (AppInfo.Name.equals(info.getName()))
+                if (AppInfo.NAME.equals(info.getName()))
                 {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
@@ -60,7 +60,7 @@ public class MainGuiApp
         if (osName.contains("mac"))
         {
             // to set the name of the app in the Mac App menu:
-            System.setProperty("apple.awt.application.name", AppInfo.Name);
+            System.setProperty("apple.awt.application.name", AppInfo.NAME);
 
             //to show the menu bar at the top of the screen:
             //System.setProperty("apple.laf.useScreenMenuBar", "true");

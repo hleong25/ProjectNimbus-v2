@@ -182,22 +182,21 @@ public class FileItemPanel
 
         Transferable transferableObjects = null;
 
-        if (m_item.getCloudController().getCloudType() == CloudType.LOCAL_FILE_SYSTEM)
+        //if (null != m_item.getCloudController().getCloudType())
+        switch (m_item.getCloudController().getCloudType())
         {
-            transferableObjects = ListLocalTransferable.createInstance(m_item.getCloudController(), m_group.getSelected());
-        }
-        else if (m_item.getCloudController().getCloudType() == CloudType.GOOGLE_DRIVE)
-        {
-            transferableObjects = ListGDriveTransferable.createInstance(m_item.getCloudController(), m_group.getSelected());
-        }
-        else if (m_item.getCloudController().getCloudType() == CloudType.DROPBOX)
-        {
-            transferableObjects = ListDropboxTransferable.createInstance(m_item.getCloudController(), m_group.getSelected());
-        }
-        else
-        {
-            LOG.fine("not supported drag type");
-            return;
+            case LOCAL_FILE_SYSTEM:
+                transferableObjects = ListLocalTransferable.createInstance(m_item.getCloudController(), m_group.getSelected());
+                break;
+            case GOOGLE_DRIVE:
+                transferableObjects = ListGDriveTransferable.createInstance(m_item.getCloudController(), m_group.getSelected());
+                break;
+            case DROPBOX:
+                transferableObjects = ListDropboxTransferable.createInstance(m_item.getCloudController(), m_group.getSelected());
+                break;
+            default:
+                LOG.fine("not supported drag type");
+                return;
         }
 
         if (transferableObjects != null)

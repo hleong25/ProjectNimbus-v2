@@ -11,6 +11,6 @@ package com.lahenry.nimbus.mainapp;
  */
 public final class AppInfo
 {
-    public static final String Name = "Nimbus";
+    public static final String NAME = "Nimbus";
 
 }

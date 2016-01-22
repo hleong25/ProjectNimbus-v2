@@ -72,7 +72,7 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
         mnuAddDropbox = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle(AppInfo.Name);
+        setTitle(AppInfo.NAME);
         setMinimumSize(new java.awt.Dimension(800, 600));
         getContentPane().setLayout(new java.awt.GridBagLayout());
 

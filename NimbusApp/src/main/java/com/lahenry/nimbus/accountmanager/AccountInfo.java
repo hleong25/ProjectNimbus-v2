@@ -35,9 +35,9 @@ public class AccountInfo
 
     private int m_version = 1; // update as needed
     private final CloudType m_type;
-    private String m_id;
+    private final String m_id;
     private String m_name;
-    private Map<String, String> m_secret;
+    private final Map<String, String> m_secret;
 
     protected AccountInfo(CloudType type, String id)
     {

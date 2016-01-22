@@ -60,6 +60,7 @@ public final class Logit extends Logger
         super.entering(this.getName(), sourceMethod);
     }
 
+    @Override
     public void entering(String sourceMethod, String param1)
     {
         this.entering(sourceMethod, new Object[]{param1});
