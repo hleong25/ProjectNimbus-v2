@@ -18,7 +18,7 @@ import java.io.IOException;
  */
 public final class NimbusDatastore
 {
-    private static final Logit Log = Logit.create(NimbusDatastore.class.getName());
+    private static final Logit LOG = Logit.create(NimbusDatastore.class.getName());
 
     private static final String ROOT_PATH = System.getProperty("user.home") + "/.nimbus";
 
@@ -40,7 +40,7 @@ public final class NimbusDatastore
         }
         catch (IOException ex)
         {
-            Log.throwing("getWriterNoThrow", ex);
+            LOG.throwing("getWriterNoThrow", ex);
             return null;
         }
     }
@@ -54,11 +54,11 @@ public final class NimbusDatastore
             if (!file.canWrite())
             {
                 String err = "File not writeable: "+file.getAbsolutePath();
-                Log.severe(err);
+                LOG.severe(err);
                 throw new IOException(err);
             }
 
-            Log.info("File overwrite: "+file.getAbsolutePath());
+            LOG.info("File overwrite: "+file.getAbsolutePath());
         }
         else
         {
@@ -66,18 +66,18 @@ public final class NimbusDatastore
             if (!FileUtils.mkdir(abspath))
             {
                 String err = "Failed to create path: "+abspath;
-                Log.severe(err);
+                LOG.severe(err);
                 throw new IOException(err);
             }
 
             if (file.createNewFile())
             {
-                Log.fine("Creating file: "+file.getAbsolutePath());
+                LOG.fine("Creating file: "+file.getAbsolutePath());
             }
             else
             {
                 String err = "Fail to create file: "+file.getAbsolutePath();
-                Log.severe(err);
+                LOG.severe(err);
                 throw new IOException(err);
             }
         }
@@ -95,7 +95,7 @@ public final class NimbusDatastore
         }
         catch (IOException ex)
         {
-            Log.throwing("readNoThrow", ex);
+            LOG.throwing("readNoThrow", ex);
             return null;
         }
     }
@@ -107,7 +107,7 @@ public final class NimbusDatastore
         if (!file.exists())
         {
             String err = "File not found: "+file.getAbsolutePath();
-            Log.severe(err);
+            LOG.severe(err);
             throw new IOException(err);
         }
 

@@ -16,7 +16,7 @@ import com.lahenry.nimbus.utils.Logit;
 public class LocalToDropboxTransferAdapter
     extends CloudTransferAdapter<java.io.File, DbxEntry>
 {
-    private static final Logit Log = Logit.create(LocalToDropboxTransferAdapter.class.getName());
+    private static final Logit LOG = Logit.create(LocalToDropboxTransferAdapter.class.getName());
 
     public LocalToDropboxTransferAdapter(GlobalCacheKey sourceCacheKey,
                                          java.io.File source,

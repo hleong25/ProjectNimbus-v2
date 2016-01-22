@@ -47,7 +47,7 @@ import java.util.List;
  */
 public class GDriveModel implements ICloudModel<com.google.api.services.drive.model.File>
 {
-    private static final Logit Log = Logit.create(GDriveModel.class.getName());
+    private static final Logit LOG = Logit.create(GDriveModel.class.getName());
 
     private static final String CLIENT_ID = "377040850517-vc3hbqvqqct5svp9nrdagrhg2v06v0o2.apps.googleusercontent.com";
     private static final String CLIENT_SECRET = "-ezNN3hvssAwm6Ewgmrg69pI";
@@ -66,18 +66,18 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
 
     public GDriveModel()
     {
-        Log.entering("<init>");
+        LOG.entering("<init>");
 
         HttpTransport httpTransport = new NetHttpTransport();
         JsonFactory jsonFactory = new JacksonFactory();
 
-        Log.fine("Creating new authorization flow");
+        LOG.fine("Creating new authorization flow");
         GoogleAuthorizationCodeFlow.Builder flowBuilder = new GoogleAuthorizationCodeFlow
             .Builder(httpTransport, jsonFactory, CLIENT_ID, CLIENT_SECRET, Arrays.asList(DriveScopes.DRIVE))
             .setAccessType("offline")
             .setApprovalPrompt("auto");
 
-        Log.fine("Building new authorization flow");
+        LOG.fine("Building new authorization flow");
         m_flow = flowBuilder.build();
     }
 
@@ -90,37 +90,37 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
     @Override
     public String getAuthUrl()
     {
-        Log.entering("getAuthUrl");
+        LOG.entering("getAuthUrl");
         String url = m_flow.newAuthorizationUrl().setRedirectUri(REDIRECT_URI).build();
-        Log.info(url);
+        LOG.info(url);
         return url;
     }
 
     @Override
     public boolean loginViaAuthCode(String authCode)
     {
-        Log.entering("loginViaAuthCode", new Object[]{authCode});
+        LOG.entering("loginViaAuthCode", new Object[]{authCode});
 
         m_service = null; // make sure the previous object is released
 
         if (Tools.isNullOrEmpty(authCode))
         {
-            Log.severe("Auth code is empty");
+            LOG.severe("Auth code is empty");
             return false;
         }
 
         try
         {
-            Log.fine("Requesting access token");
+            LOG.fine("Requesting access token");
             GoogleTokenResponse response = m_flow.newTokenRequest(authCode).setRedirectUri(REDIRECT_URI).execute();
 
             if ((response == null) || response.isEmpty())
             {
-                Log.severe("Response is null or empty");
+                LOG.severe("Response is null or empty");
                 return false;
             }
 
-            Log.fine("Response is " + response.toString());
+            LOG.fine("Response is " + response.toString());
 
             Credential creds = m_flow.createAndStoreCredential(response, null);
 
@@ -128,33 +128,33 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         }
         catch (IOException ex)
         {
-            Log.throwing("login", ex);
+            LOG.throwing("login", ex);
             return false;
         }
     }
 
     protected boolean loginViaAccessToken(String accesstoken, String refreshtoken)
     {
-        Log.entering("loginViaAccessToken", new Object[]{accesstoken, refreshtoken});
+        LOG.entering("loginViaAccessToken", new Object[]{accesstoken, refreshtoken});
 
         if (Tools.isNullOrEmpty(accesstoken))
         {
-            Log.warning("Access token is emtpy");
+            LOG.warning("Access token is emtpy");
             return false;
         }
 
         if (Tools.isNullOrEmpty(refreshtoken))
         {
-            Log.warning("Refresh token is emtpy");
+            LOG.warning("Refresh token is emtpy");
             return false;
         }
 
-        Log.fine("Using stored credentials");
+        LOG.fine("Using stored credentials");
 
         HttpTransport httpTransport = m_flow.getTransport();
         JsonFactory jsonFactory = m_flow.getJsonFactory();
 
-        Log.fine("Creating new GoogleCredential using stored credentials");
+        LOG.fine("Creating new GoogleCredential using stored credentials");
         GoogleCredential credential = new GoogleCredential.Builder()
             .setJsonFactory(jsonFactory)
             .setTransport(httpTransport)
@@ -164,19 +164,19 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
             .setRefreshToken(refreshtoken);
 
         //Create a new authorized API client
-        Log.fine("Creating the new Google Drive client");
+        LOG.fine("Creating the new Google Drive client");
         m_service = new Drive.Builder(httpTransport, jsonFactory, credential)
             .setApplicationName(AppInfo.Name)
             .build();
 
         try
         {
-            Log.fine("Getting user info");
+            LOG.fine("Getting user info");
             m_userInfo = m_service.about().get().execute();
         }
         catch (IOException ex)
         {
-            Log.throwing("loginViaAccessToken", ex);
+            LOG.throwing("loginViaAccessToken", ex);
             m_userInfo = null;
         }
 
@@ -204,12 +204,12 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
     @Override
     public boolean loginViaStoredId(String uniqueid)
     {
-        Log.entering("loginViaStoredId", new Object[]{uniqueid});
+        LOG.entering("loginViaStoredId", new Object[]{uniqueid});
 
         AccountManager manager = AccountManager.getInstance();
         if (manager == null)
         {
-            Log.fine("Failed to get account manager");
+            LOG.fine("Failed to get account manager");
             return false;
         }
 
@@ -242,7 +242,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
     @Override
     public File getRoot()
     {
-        Log.entering("getRoot");
+        LOG.entering("getRoot");
 
         if (m_root != null)
         {
@@ -255,13 +255,13 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
 
             String rootID = about.getRootFolderId();
 
-            Log.info("Root ID: "+rootID);
+            LOG.info("Root ID: "+rootID);
 
             m_root = getItemById(rootID);
         }
         catch (IOException ex)
         {
-            Log.throwing("getRoot", ex);
+            LOG.throwing("getRoot", ex);
         }
 
         return m_root;
@@ -270,7 +270,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
     @Override
     public File getItemById(String id)
     {
-        Log.entering("getItemById", id);
+        LOG.entering("getItemById", id);
 
         try
         {
@@ -278,7 +278,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         }
         catch (IOException ex)
         {
-            Log.throwing("getItemById", ex);
+            LOG.throwing("getItemById", ex);
         }
         return null;
     }
@@ -292,7 +292,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
     @Override
     public List<File> getChildrenItems(File parent)
     {
-        Log.entering("getChildrenItems", new Object[]{(parent != null ? parent.getId() : "(parent.null)")});
+        LOG.entering("getChildrenItems", new Object[]{(parent != null ? parent.getId() : "(parent.null)")});
 
         final List<File> list = new ArrayList<>();
 
@@ -317,7 +317,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
                     }
                     request.setPageToken(children.getNextPageToken());
                 } catch (IOException ex) {
-                    Log.throwing("getChildrenItems", ex);
+                    LOG.throwing("getChildrenItems", ex);
                     request.setPageToken(null);
                 }
             } while (request.getPageToken() != null &&
@@ -325,7 +325,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
 
         } catch (IOException ex)
         {
-            Log.throwing("getChildrenItems", ex);
+            LOG.throwing("getChildrenItems", ex);
         }
 
         return list;
@@ -355,7 +355,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         // https://code.google.com/p/google-api-java-client/wiki/MediaUpload
         // http://stackoverflow.com/questions/25288849/resumable-uploads-google-drive-sdk-for-android-or-java
 
-        Log.entering("transfer");
+        LOG.entering("transfer");
 
         try
         {
@@ -373,19 +373,19 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
                 {
                     switch (mhu.getUploadState()) {
                         case INITIATION_STARTED:
-                            Log.fine("Initiation has started!");
+                            LOG.fine("Initiation has started!");
                             progressHandler.initalize();
                             progressHandler.start(metadata.getFileSize());
                             break;
                         case INITIATION_COMPLETE:
-                            Log.fine("Initiation is complete!");
+                            LOG.fine("Initiation is complete!");
                             break;
                         case MEDIA_IN_PROGRESS:
-                            //Log.finer("BytesSent: "+mhu.getNumBytesUploaded()+" Progress: "+mhu.getProgress());
+                            //LOG.finer("BytesSent: "+mhu.getNumBytesUploaded()+" Progress: "+mhu.getProgress());
                             progressHandler.progress(mhu.getNumBytesUploaded());
                             break;
                         case MEDIA_COMPLETE:
-                            Log.fine("Upload is complete!");
+                            LOG.fine("Upload is complete!");
                             progressHandler.finish();
                             break;
                     }
@@ -397,32 +397,32 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
                 .setChunkSize(2*MediaHttpUploader.MINIMUM_CHUNK_SIZE)
                 .setProgressListener(progressListener);
 
-            Log.fine("Start uploading file");
+            LOG.fine("Start uploading file");
 
             final long startTime = System.nanoTime();
             File xferredFile = request.execute();
 
             final long elapsedNano = System.nanoTime() - startTime;
-            Log.fine(Tools.formatTransferMsg(elapsedNano, xferredFile.getFileSize()));
+            LOG.fine(Tools.formatTransferMsg(elapsedNano, xferredFile.getFileSize()));
 
-            Log.fine("Uploaded file done");
+            LOG.fine("Uploaded file done");
 
             transfer.setTransferredObject(xferredFile);
         }
         catch (IOException ex)
         {
-            Log.throwing("transfer", ex);
+            LOG.throwing("transfer", ex);
         }
     }
 
     @Override
     public InputStream getDownloadStream(File downloadFile)
     {
-        Log.entering("getDownloadStream", new Object[]{downloadFile.getTitle()});
+        LOG.entering("getDownloadStream", new Object[]{downloadFile.getTitle()});
 
         if (Tools.isNullOrEmpty(downloadFile.getDownloadUrl()))
         {
-            Log.warning("Download stream URL is empty");
+            LOG.warning("Download stream URL is empty");
             return null;
         }
 
@@ -433,25 +433,25 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
                 @Override
                 public void progressChanged(MediaHttpDownloader downloader) throws IOException
                 {
-                    Log.entering("progressChanged");
+                    LOG.entering("progressChanged");
                     switch (downloader.getDownloadState())
                     {
                         case NOT_STARTED:
-                            Log.fine("Download State: NOT_STARTED");
+                            LOG.fine("Download State: NOT_STARTED");
                             break;
                         case MEDIA_IN_PROGRESS:
-                            Log.fine("BytesRecieved: "+downloader.getNumBytesDownloaded()+" Progress: "+downloader.getProgress());
+                            LOG.fine("BytesRecieved: "+downloader.getNumBytesDownloaded()+" Progress: "+downloader.getProgress());
                             break;
                         case MEDIA_COMPLETE:
-                            Log.fine("Download complete");
+                            LOG.fine("Download complete");
                             break;
                     }
                 }
             };
 
-            Log.fine("Setting up the download: "+downloadFile.getTitle());
-            Log.fine("Download size: "+downloadFile.getFileSize());
-            Log.fine(downloadFile.toString());
+            LOG.fine("Setting up the download: "+downloadFile.getTitle());
+            LOG.fine("Download size: "+downloadFile.getFileSize());
+            LOG.fine(downloadFile.toString());
 
             //final int CHUNK_SIZE = 4*MediaHttpUploader.MINIMUM_CHUNK_SIZE;
 
@@ -460,7 +460,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
                 //.setChunkSize(2*CHUNK_SIZE)
                 .setProgressListener(progressListener);
 
-            //Log.fine("ChunkSize: " + request.getMediaHttpDownloader().getChunkSize());
+            //LOG.fine("ChunkSize: " + request.getMediaHttpDownloader().getChunkSize());
 
             InputStream is = request.executeMediaAsInputStream();
 
@@ -468,7 +468,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         }
         catch (IOException ex)
         {
-            Log.throwing("getDownloadStream", ex);
+            LOG.throwing("getDownloadStream", ex);
         }
 
         return null;

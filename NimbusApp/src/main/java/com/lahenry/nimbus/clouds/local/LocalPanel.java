@@ -32,7 +32,7 @@ import java.io.File;
 public class LocalPanel
     extends CloudPanelAdapter<File, LocalController>
 {
-    private static final Logit Log = Logit.create(LocalPanel.class.getName());
+    private static final Logit LOG = Logit.create(LocalPanel.class.getName());
 
     /**
      * Creates new form LocalPanel
@@ -41,7 +41,7 @@ public class LocalPanel
     {
         super();
 
-        Log.entering("<init>");
+        LOG.entering("<init>");
         initComponents();
     }
 
@@ -76,13 +76,13 @@ public class LocalPanel
     public void initPanel(ICloudController<?> controller)
     //public void initPanel(LocalController controller)
     {
-        Log.entering("initPanel");
+        LOG.entering("initPanel");
         m_controller = (LocalController) controller;
 
         pnlFiles.setProxy(this);
         pnlFiles.setView(AllCardsPanel.ViewType.LARGE_ICONS);
 
-        Log.fine("Showing root path");
+        LOG.fine("Showing root path");
         File root = m_controller.getRoot();
         responsiveShowFiles(root, false);
 
@@ -99,14 +99,14 @@ public class LocalPanel
     @Override
     public String getAbsolutePath(File item)
     {
-        Log.entering("getAbsolutePath", new Object[]{item});
+        LOG.entering("getAbsolutePath", new Object[]{item});
         return item.getAbsolutePath();
     }
 
     @Override
     public void setCurrentPath(File path)
     {
-        Log.entering("setCurrentPath", new Object[]{path});
+        LOG.entering("setCurrentPath", new Object[]{path});
 
         super.setCurrentPath(path);
         txtPath.setText(getAbsolutePath(path));
@@ -141,9 +141,9 @@ public class LocalPanel
     public XferHolder<?, File> createXferHolder(GlobalCacheKey sourceCacheKey, Object input)
     {
         final GlobalCacheKey targetCacheKey = GlobalCache.getInstance().getKey(m_controller);
-        //Log.finer("xferholder sourceCacheKey:"+sourceCacheKey+" targetCacheKey:"+targetCacheKey);
+        //LOG.finer("xferholder sourceCacheKey:"+sourceCacheKey+" targetCacheKey:"+targetCacheKey);
         final ICloudController genericInputController = (ICloudController) GlobalCache.getInstance().get(sourceCacheKey);
-        //Log.finer("genericInputController:"+genericInputController);
+        //LOG.finer("genericInputController:"+genericInputController);
         switch (genericInputController.getCloudType())
         {
             case LOCAL_FILE_SYSTEM:

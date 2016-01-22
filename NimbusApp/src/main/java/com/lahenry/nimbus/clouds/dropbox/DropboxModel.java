@@ -39,7 +39,7 @@ import java.util.Locale;
  */
 public class DropboxModel implements ICloudModel<DbxEntry>
 {
-    private static final Logit Log = Logit.create(DropboxModel.class.getName());
+    private static final Logit LOG = Logit.create(DropboxModel.class.getName());
 
     private static final String APP_KEY = "954i1xyd8mu6o7m";
     private static final String APP_SECRET = "htc1ejxcr081hjg";
@@ -58,7 +58,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
 
     public DropboxModel()
     {
-        Log.entering("<init>");
+        LOG.entering("<init>");
     }
 
     @Override
@@ -70,58 +70,58 @@ public class DropboxModel implements ICloudModel<DbxEntry>
     @Override
     public String getAuthUrl()
     {
-        Log.entering("getAuthUrl");
+        LOG.entering("getAuthUrl");
         String url = m_webAuth.start();
-        Log.info(url);
+        LOG.info(url);
         return url;
     }
 
     @Override
     public boolean loginViaAuthCode(String authCode)
     {
-        Log.entering("loginViaAuthCode", new Object[]{authCode});
+        LOG.entering("loginViaAuthCode", new Object[]{authCode});
 
         m_client = null; // make sure the previous object is released
 
         if (Tools.isNullOrEmpty(authCode))
         {
-            Log.severe("Auth code not valid");
+            LOG.severe("Auth code not valid");
             return false;
         }
 
         try
         {
             // This will fail if the user enters an invalid authorization code.
-            Log.fine("Getting access token");
+            LOG.fine("Getting access token");
             DbxAuthFinish authFinish = m_webAuth.finish(authCode);
             String accessToken = authFinish.accessToken;
 
-            Log.info("Access token: "+ accessToken);
+            LOG.info("Access token: "+ accessToken);
 
             return loginViaAccessToken(accessToken);
         }
         catch (DbxException ex)
         {
-            Log.throwing("login", ex);
+            LOG.throwing("login", ex);
             return false;
         }
     }
 
     protected boolean loginViaAccessToken(String accesstoken)
     {
-        Log.entering("loginViaAccessToken", new Object[]{accesstoken});
+        LOG.entering("loginViaAccessToken", new Object[]{accesstoken});
 
         // getting the client
         m_client = new DbxClient(m_config, accesstoken);
 
         try
         {
-            Log.fine("Getting user info");
+            LOG.fine("Getting user info");
             m_userInfo = m_client.getAccountInfo();
         }
         catch (DbxException ex)
         {
-            Log.throwing("loginViaAccessToken", ex);
+            LOG.throwing("loginViaAccessToken", ex);
             m_client = null;
             return false;
         }
@@ -149,12 +149,12 @@ public class DropboxModel implements ICloudModel<DbxEntry>
     @Override
     public boolean loginViaStoredId(String uniqueid)
     {
-        Log.entering("loginViaStoredId", new Object[]{uniqueid});
+        LOG.entering("loginViaStoredId", new Object[]{uniqueid});
 
         AccountManager manager = AccountManager.getInstance();
         if (manager == null)
         {
-            Log.fine("Failed to get account manager");
+            LOG.fine("Failed to get account manager");
             return false;
         }
 
@@ -186,7 +186,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
     @Override
     public DbxEntry getRoot()
     {
-        Log.entering("getRoot");
+        LOG.entering("getRoot");
 
         if (m_root != null)
         {
@@ -200,17 +200,17 @@ public class DropboxModel implements ICloudModel<DbxEntry>
     @Override
     public DbxEntry getItemById(String id)
     {
-        Log.entering("getItemById", id);
+        LOG.entering("getItemById", id);
 
         try
         {
             DbxEntry entry = m_client.getMetadata(id);
-            //Log.fine(entry.toStringMultiline());
+            //LOG.fine(entry.toStringMultiline());
             return entry;
         }
         catch (DbxException ex)
         {
-            Log.throwing("getItemById", ex);
+            LOG.throwing("getItemById", ex);
         }
 
         return null;
@@ -225,11 +225,11 @@ public class DropboxModel implements ICloudModel<DbxEntry>
     @Override
     public List<DbxEntry> getChildrenItems(DbxEntry parent)
     {
-        Log.entering("getChildrenItems", parent);
+        LOG.entering("getChildrenItems", parent);
 
         if (!parent.isFolder())
         {
-            Log.warning("Entry '"+parent.path+"' is not a folder");
+            LOG.warning("Entry '"+parent.path+"' is not a folder");
             return null;
         }
 
@@ -243,7 +243,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
             {
                 for (DbxEntry entry : list)
                 {
-                    Log.finer(entry.toStringMultiline());
+                    LOG.finer(entry.toStringMultiline());
                 }
             }
 
@@ -251,7 +251,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
         }
         catch (DbxException ex)
         {
-            Log.throwing("getChildrenItems", ex);
+            LOG.throwing("getChildrenItems", ex);
         }
 
         return null;
@@ -278,7 +278,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
     @Override
     public void transfer(final ICloudTransfer<?, DbxEntry> transfer)
     {
-        Log.entering("transfering", new Object[]{transfer});
+        LOG.entering("transfering", new Object[]{transfer});
 
         final InputStream is = transfer.getInputStream();
         OutputStream os = null;
@@ -325,7 +325,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
 
                 DbxEntry outputFile = uploader.finish();
 
-                Log.fine(Tools.formatTransferMsg(elapsedNano, outputFile.asFile().numBytes));
+                LOG.fine(Tools.formatTransferMsg(elapsedNano, outputFile.asFile().numBytes));
 
                 transfer.setTransferredObject(outputFile);
 
@@ -333,28 +333,28 @@ public class DropboxModel implements ICloudModel<DbxEntry>
             }
             else
             {
-                Log.warning("Transferred aborted");
+                LOG.warning("Transferred aborted");
             }
         }
         catch (IOException | DbxException ex)
         {
-            Log.throwing("transfer", ex);
+            LOG.throwing("transfer", ex);
         }
         finally
         {
             try
             {
-                Log.fine("Closing input stream");
+                LOG.fine("Closing input stream");
                 if (is != null) is.close();
             }
             catch (IOException ex)
             {
-                Log.throwing("transfer", ex);
+                LOG.throwing("transfer", ex);
             }
 
             try
             {
-                Log.fine("Closing output stream");
+                LOG.fine("Closing output stream");
                 if (is != null)
                 {
                     os.flush();
@@ -363,7 +363,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
             }
             catch (IOException ex)
             {
-                Log.throwing("transfer", ex);
+                LOG.throwing("transfer", ex);
             }
         }
     }
@@ -371,7 +371,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
     @Override
     public InputStream getDownloadStream(DbxEntry downloadFile)
     {
-        Log.entering("getDownloadStream", new Object[]{downloadFile});
+        LOG.entering("getDownloadStream", new Object[]{downloadFile});
 
         try
         {
@@ -380,7 +380,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
         }
         catch (DbxException ex)
         {
-            Log.throwing("getDownloadStream", ex);
+            LOG.throwing("getDownloadStream", ex);
         }
 
         return null;

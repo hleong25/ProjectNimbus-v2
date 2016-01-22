@@ -19,7 +19,7 @@ import javax.swing.SwingUtilities;
  */
 public class FileItemPanelGroup
 {
-    private static final Logit Log = Logit.create(FileItemPanelGroup.class.getName());
+    private static final Logit LOG = Logit.create(FileItemPanelGroup.class.getName());
 
     private final List<FileItemPanel> m_allPanels = new ArrayList<>();
     private final List<FileItemPanel> m_selectedPanels = new ArrayList<>();
@@ -87,7 +87,7 @@ public class FileItemPanelGroup
 
     public final List<FileItemPanel> getSelected()
     {
-        Log.fine("count:"+m_selectedPanels.size());
+        LOG.fine("count:"+m_selectedPanels.size());
         return m_selectedPanels;
     }
 }

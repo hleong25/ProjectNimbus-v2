@@ -22,7 +22,7 @@ import java.util.List;
  */
 public abstract class DefaultDropTargetAdapter extends DropTargetAdapter
 {
-    private static final Logit Log = Logit.create(DefaultDropTargetAdapter.class.getName());
+    private static final Logit LOG = Logit.create(DefaultDropTargetAdapter.class.getName());
 
     public DefaultDropTargetAdapter()
     {
@@ -35,7 +35,7 @@ public abstract class DefaultDropTargetAdapter extends DropTargetAdapter
     @Override
     public void drop(DropTargetDropEvent dtde)
     {
-        Log.entering("drop");
+        LOG.entering("drop");
 
         // Accept copy drops
         dtde.acceptDrop(DnDConstants.ACTION_COPY);
@@ -56,8 +56,8 @@ public abstract class DefaultDropTargetAdapter extends DropTargetAdapter
                 // If the drop items are files
                 if (flavor.isFlavorJavaFileListType())
                 {
-                    Log.fine("Drag&Drop from system");
-                    Log.fine("Flavor mime: "+flavor.getMimeType());
+                    LOG.fine("Drag&Drop from system");
+                    LOG.fine("Flavor mime: "+flavor.getMimeType());
                     // Get all of the dropped files
                     // HL: this might not work
                     // TODO: check for unchecked or unsafe operations
@@ -65,9 +65,9 @@ public abstract class DefaultDropTargetAdapter extends DropTargetAdapter
                 }
                 else if (TransferableAdapter.isNimbusDataFlavorSupported(flavor))
                 {
-                    Log.fine("Nimbus Drag&Drop");
-                    Log.fine("Flavor mime: "+flavor.getMimeType());
-                    Log.fine(transferable.toString());
+                    LOG.fine("Nimbus Drag&Drop");
+                    LOG.fine("Flavor mime: "+flavor.getMimeType());
+                    LOG.fine(transferable.toString());
                     tc = (TransferableContainer) transferable.getTransferData(flavor);
                 }
                 else
@@ -89,7 +89,7 @@ public abstract class DefaultDropTargetAdapter extends DropTargetAdapter
             }
             catch (Exception ex)
             {
-                Log.throwing("drop", ex);
+                LOG.throwing("drop", ex);
             }
         }
 

@@ -19,13 +19,13 @@ import com.lahenry.nimbus.utils.Logit;
 public class GDriveController
     extends CloudControllerAdapter<com.google.api.services.drive.model.File>
 {
-    private static final Logit Log = Logit.create(GDriveController.class.getName());
+    private static final Logit LOG = Logit.create(GDriveController.class.getName());
 
     public GDriveController()
     {
         super(GDriveController.class.getName(), new GDriveModel());
 
-        Log.entering("<init>");
+        LOG.entering("<init>");
 
         m_rootFolder = GDriveConstants.FOLDER_ROOT;
     }
@@ -39,11 +39,11 @@ public class GDriveController
     @Override
     public File getParent(File item)
     {
-        Log.entering("getParent", (item != null ? item.getId() : "null"));
+        LOG.entering("getParent", (item != null ? item.getId() : "null"));
 
         if (item == null)
         {
-            Log.warning("item is null");
+            LOG.warning("item is null");
             return null;
         }
 

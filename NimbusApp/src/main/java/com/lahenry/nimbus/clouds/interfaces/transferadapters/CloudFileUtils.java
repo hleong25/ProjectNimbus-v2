@@ -16,7 +16,7 @@ import java.util.Arrays;
  */
 public class CloudFileUtils
 {
-    private static final Logit Log = Logit.create(CloudFileUtils.class.getName());
+    private static final Logit LOG = Logit.create(CloudFileUtils.class.getName());
 
     private CloudFileUtils()
     {
@@ -26,7 +26,7 @@ public class CloudFileUtils
     public static java.io.File convertToLocal(java.io.File outputPath,
                                               Object inputObject)
     {
-        Log.entering("convertToLocal", new Object[]{outputPath, inputObject});
+        LOG.entering("convertToLocal", new Object[]{outputPath, inputObject});
         final java.io.File outputFile;
 
         if (inputObject instanceof java.io.File)
@@ -49,14 +49,14 @@ public class CloudFileUtils
             throw new IllegalArgumentException("Input cloud type '"+inputObject.getClass().getName()+"' not supported");
         }
 
-        Log.fine("Details of outputFile: "+outputFile);
+        LOG.fine("Details of outputFile: "+outputFile);
         return outputFile;
     }
 
     public static com.google.api.services.drive.model.File convertToGDrive(com.google.api.services.drive.model.File outputPath,
                                                                            Object inputObject)
     {
-        Log.entering("convertToLocal", new Object[]{outputPath, inputObject});
+        LOG.entering("convertToLocal", new Object[]{outputPath, inputObject});
         final com.google.api.services.drive.model.File outputFile = new com.google.api.services.drive.model.File();
 
         ParentReference parentRef = new ParentReference();
@@ -92,14 +92,14 @@ public class CloudFileUtils
             throw new IllegalArgumentException("Input cloud type '"+inputObject.getClass().getName()+"' not supported");
         }
 
-        Log.fine("Details of outputFile: "+outputFile);
+        LOG.fine("Details of outputFile: "+outputFile);
         return outputFile;
     }
 
     public static com.dropbox.core.DbxEntry convertToDropbox(com.dropbox.core.DbxEntry outputPath,
                                                              Object inputObject)
     {
-        Log.entering("convertToLocal", new Object[]{outputPath, inputObject});
+        LOG.entering("convertToLocal", new Object[]{outputPath, inputObject});
 
         final String path;
         final String iconName;
@@ -165,7 +165,7 @@ public class CloudFileUtils
                                                       clientMtime,
                                                       rev);
 
-        Log.fine("Details of outputFile: "+outputFile);
+        LOG.fine("Details of outputFile: "+outputFile);
         return outputFile;
     }
 }

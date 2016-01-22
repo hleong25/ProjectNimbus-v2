@@ -28,7 +28,7 @@ public class FileItemPanel
     extends javax.swing.JPanel
     implements DragGestureListener
 {
-    private static final Logit Log = Logit.create(FileItemPanel.class.getName());
+    private static final Logit LOG = Logit.create(FileItemPanel.class.getName());
 
     protected final IFileItem m_item;
     protected FileItemPanelGroup m_group = null;
@@ -165,11 +165,11 @@ public class FileItemPanel
     @Override
     public void dragGestureRecognized(DragGestureEvent dge)
     {
-        Log.entering("dragGestureRecognized");
+        LOG.entering("dragGestureRecognized");
 
         if (m_group == null)
         {
-            Log.finer("Panel group not defined.");
+            LOG.finer("Panel group not defined.");
             return;
         }
 
@@ -196,7 +196,7 @@ public class FileItemPanel
         }
         else
         {
-            Log.fine("not supported drag type");
+            LOG.fine("not supported drag type");
             return;
         }
 

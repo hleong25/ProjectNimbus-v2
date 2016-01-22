@@ -18,7 +18,7 @@ import javax.swing.ImageIcon;
  */
 public class GDriveFileItem implements IFileItem<File>
 {
-    private static final Logit Log = Logit.create(GDriveFileItem.class.getName());
+    private static final Logit LOG = Logit.create(GDriveFileItem.class.getName());
 
     protected final ICloudController<File> m_controller;
     protected final File m_item;
@@ -50,7 +50,7 @@ public class GDriveFileItem implements IFileItem<File>
 
         if (m_item.getMimeType() == null)
         {
-            Log.fine("Item="+m_item.getTitle()+" Mime=(null)");
+            LOG.fine("Item="+m_item.getTitle()+" Mime=(null)");
             path = "images/google/icon/drive-64.png";
         }
         else if (m_item.getMimeType().equals(GDriveConstants.MIME_TYPE_DOCUMENT))
@@ -75,7 +75,7 @@ public class GDriveFileItem implements IFileItem<File>
         }
         else
         {
-            Log.fine("Item="+m_item.getTitle()+" Mime="+m_item.getMimeType());
+            LOG.fine("Item="+m_item.getTitle()+" Mime="+m_item.getMimeType());
             path = "images/google/icon/drive-64.png";
         }
 

@@ -34,7 +34,7 @@ import java.util.ListIterator;
 public class GDrivePanel
     extends CloudPanelAdapter<com.google.api.services.drive.model.File, GDriveController>
 {
-    private static final Logit Log = Logit.create(GDrivePanel.class.getName());
+    private static final Logit LOG = Logit.create(GDrivePanel.class.getName());
 
     private final List<com.google.api.services.drive.model.File> m_trailPaths = new ArrayList<>();
 
@@ -45,7 +45,7 @@ public class GDrivePanel
     {
         super();
 
-        Log.entering("<init>");
+        LOG.entering("<init>");
         initComponents();
     }
 
@@ -93,7 +93,7 @@ public class GDrivePanel
     public void initPanel(ICloudController<?> controller)
     //public void initPanel(GDriveController controller)
     {
-        Log.entering("initPanel", new Object[]{controller});
+        LOG.entering("initPanel", new Object[]{controller});
         m_controller = (GDriveController) controller;
 
         pnlFiles.setProxy(this);
@@ -115,14 +115,14 @@ public class GDrivePanel
     @Override
     public String getAbsolutePath(com.google.api.services.drive.model.File item)
     {
-        Log.entering("getAbsolutePath", new Object[]{item});
+        LOG.entering("getAbsolutePath", new Object[]{item});
         return item.getId();
     }
 
     @Override
     public void setCurrentPath(com.google.api.services.drive.model.File path)
     {
-        Log.entering("setCurrentPath", new Object[]{path.getId()});
+        LOG.entering("setCurrentPath", new Object[]{path.getId()});
 
         super.setCurrentPath(path);
 

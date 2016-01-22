@@ -38,7 +38,7 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
     implements ICloudPanel<T, CC>,
                ILayoutToCloudPanelProxy
 {
-    private static final Logit Log = Logit.create(CloudPanelAdapter.class.getName());
+    private static final Logit LOG = Logit.create(CloudPanelAdapter.class.getName());
 
     protected final Map<T, List<Component>> m_cachedComponents = new HashMap<>();
 
@@ -52,13 +52,13 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
 
     protected CloudPanelAdapter()
     {
-        Log.entering("<init>");
+        LOG.entering("<init>");
     }
 
     @Override
     public void disposePanel()
     {
-        Log.entering("disposePanel");
+        LOG.entering("disposePanel");
         m_canTransfer.set(false);
 
         Tools.wait(m_xferObject);
@@ -73,7 +73,7 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
     @Override
     public void responsiveShowFiles(final T path, final boolean useCache)
     {
-        Log.entering("responsiveShowFiles", new Object[]{getAbsolutePath(path), useCache});
+        LOG.entering("responsiveShowFiles", new Object[]{getAbsolutePath(path), useCache});
 
         BusyTaskCursor.doTask(this, new BusyTaskCursor.IBusyTask()
         {
@@ -88,13 +88,13 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
     @Override
     public List<Component> getFiles(final T parent, final boolean useCache)
     {
-        Log.entering("getFiles", new Object[]{getAbsolutePath(parent), useCache});
+        LOG.entering("getFiles", new Object[]{getAbsolutePath(parent), useCache});
 
         List<Component> list;
 
         if (useCache && m_cachedComponents.containsKey(parent))
         {
-            Log.fine(String.format("Cache hit '%s'", getAbsolutePath(parent)));
+            LOG.fine(String.format("Cache hit '%s'", getAbsolutePath(parent)));
             list = m_cachedComponents.get(parent);
         }
         else
@@ -121,7 +121,7 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
             // get all files in this folder
             final List<T> files = m_controller.getChildrenItems(parent, useCache);
 
-            Log.fine("Total files: "+files.size());
+            LOG.fine("Total files: "+files.size());
 
             for (T file : files)
             {
@@ -139,7 +139,7 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
     @Override
     public void showFiles(final T parent, final boolean useCache)
     {
-        Log.entering("showFiles", new Object[]{getAbsolutePath(parent), useCache});
+        LOG.entering("showFiles", new Object[]{getAbsolutePath(parent), useCache});
 
         if (m_xferObject != null)
         {
@@ -190,10 +190,10 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
     @Override
     public void proxyKeyReleased(KeyEvent evt)
     {
-        Log.entering("proxyKeyReleased", evt);
+        LOG.entering("proxyKeyReleased", evt);
         if (evt.getKeyCode() == KeyEvent.VK_F5)
         {
-            Log.fine("KeyEvent.VK_F5");
+            LOG.fine("KeyEvent.VK_F5");
             responsiveShowFiles(m_currentPath, false);
         }
     }
@@ -201,14 +201,14 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
     @Override
     public void refreshCurrentView()
     {
-        Log.entering("refreshCurrentView");
+        LOG.entering("refreshCurrentView");
         responsiveShowFiles(m_currentPath, false);
     }
 
     @Override
     public List<XferHolder<?, T>> generateTransferList(TransferableContainer tc)
     {
-        Log.entering("generateTransferList", new Object[]{tc});
+        LOG.entering("generateTransferList", new Object[]{tc});
 
         final List<XferHolder<?, T>> uploadFiles = new ArrayList<>();
 
@@ -218,7 +218,7 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
 
         for (Object obj : tc.getList())
         {
-            Log.fine(obj.toString());
+            LOG.fine(obj.toString());
 
             XferHolder<?, T> holder = createXferHolder(sourceCacheKey, obj);
             holder.xfer.setCanTransfer(m_canTransfer);
@@ -238,13 +238,13 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
     @Override
     public boolean doTransferLoop(List<XferHolder<?, T>> list)
     {
-        Log.entering("doTransferLoop", new Object[]{list});
+        LOG.entering("doTransferLoop", new Object[]{list});
 
         // Loop them through
         for (XferHolder<?, T> holder : list)
         {
             // Print out the file path
-            Log.fine("Source: "+holder.xfer.getSourceObject()+"\nTarget: "+holder.xfer.getTargetObject());
+            LOG.fine("Source: "+holder.xfer.getSourceObject()+"\nTarget: "+holder.xfer.getTargetObject());
 
             holder.xfer.setProgressHandler(new CloudProgressAdapter(holder.pnl));
 
@@ -266,7 +266,7 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
     @Override
     public boolean onAction_drop(TransferableContainer tc)
     {
-        Log.entering("onAction_drop", new Object[]{tc});
+        LOG.entering("onAction_drop", new Object[]{tc});
 
         if (m_xferObject != null)
         {

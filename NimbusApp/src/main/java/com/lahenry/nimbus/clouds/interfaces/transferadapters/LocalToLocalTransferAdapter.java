@@ -16,7 +16,7 @@ import java.io.File;
 public class LocalToLocalTransferAdapter
     extends CloudTransferAdapter<File, File>
 {
-    private static final Logit Log = Logit.create(LocalToLocalTransferAdapter.class.getName());
+    private static final Logit LOG = Logit.create(LocalToLocalTransferAdapter.class.getName());
 
     public LocalToLocalTransferAdapter(GlobalCacheKey sourceCacheKey,
                                        File source,

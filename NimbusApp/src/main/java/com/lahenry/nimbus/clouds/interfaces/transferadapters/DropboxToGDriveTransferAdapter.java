@@ -15,7 +15,7 @@ import com.lahenry.nimbus.utils.Logit;
 public class DropboxToGDriveTransferAdapter
     extends CloudTransferAdapter<com.dropbox.core.DbxEntry, com.google.api.services.drive.model.File>
 {
-    private static final Logit Log = Logit.create(DropboxToGDriveTransferAdapter.class.getName());
+    private static final Logit LOG = Logit.create(DropboxToGDriveTransferAdapter.class.getName());
 
     public DropboxToGDriveTransferAdapter(GlobalCacheKey sourceCacheKey,
                                           com.dropbox.core.DbxEntry source,

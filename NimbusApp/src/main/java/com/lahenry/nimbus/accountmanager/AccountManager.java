@@ -33,7 +33,7 @@ import org.xml.sax.SAXException;
  */
 public class AccountManager
 {
-    private static final Logit Log = Logit.create(AccountManager.class.getName());
+    private static final Logit LOG = Logit.create(AccountManager.class.getName());
     private static AccountManager m_singleton = null;
     private static boolean m_createdSingleton = false;
 
@@ -67,7 +67,7 @@ public class AccountManager
             }
             catch (ParserConfigurationException ex)
             {
-                Log.throwing("getInstance", ex);
+                LOG.throwing("getInstance", ex);
                 return null;
             }
         }
@@ -79,11 +79,11 @@ public class AccountManager
         File accountsFile = NimbusDatastore.getFile("creds", FILE_ACCOUNTS);
         if (!accountsFile.canRead())
         {
-            Log.warning("Failed to read creds file");
+            LOG.warning("Failed to read creds file");
             return false;
         }
 
-        Log.fine("Reading credentials: " + accountsFile.getAbsolutePath());
+        LOG.fine("Reading credentials: " + accountsFile.getAbsolutePath());
 
         try
         {
@@ -96,7 +96,7 @@ public class AccountManager
 
             if (!root.getNodeName().equals(ELEM_ROOT))
             {
-                Log.severe("Failed to parse accounts file because root element not '"+ELEM_ROOT+"'.");
+                LOG.severe("Failed to parse accounts file because root element not '"+ELEM_ROOT+"'.");
                 return false;
             }
 
@@ -119,7 +119,7 @@ public class AccountManager
                             }
                             else
                             {
-                                Log.warning("Failed to parse #"+idx+" account info");
+                                LOG.warning("Failed to parse #"+idx+" account info");
                             }
 
                         }
@@ -131,7 +131,7 @@ public class AccountManager
         }
         catch (SAXException | IOException ex)
         {
-            Log.throwing("parseCredsFile", ex);
+            LOG.throwing("parseCredsFile", ex);
         }
         return false;
     }
@@ -144,7 +144,7 @@ public class AccountManager
 
     public AccountInfo getAccountInfo(String id)
     {
-        //Log.entering("getAccountInfo");
+        //LOG.entering("getAccountInfo");
         AccountInfo info = m_accounts.get(id);
         return info;
 

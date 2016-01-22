@@ -15,7 +15,7 @@ import java.awt.Component;
  */
 public class WrapScrollPanel extends javax.swing.JPanel
 {
-    private static final Logit Log = Logit.create(WrapScrollPanel.class.getName());
+    private static final Logit LOG = Logit.create(WrapScrollPanel.class.getName());
 
     private ILayoutToCloudPanelProxy m_proxy;
 
@@ -24,7 +24,7 @@ public class WrapScrollPanel extends javax.swing.JPanel
      */
     public WrapScrollPanel()
     {
-        Log.entering("<init>");
+        LOG.entering("<init>");
         initComponents();
     }
 
@@ -81,7 +81,7 @@ public class WrapScrollPanel extends javax.swing.JPanel
 
     private void pnlCompsKeyReleased(java.awt.event.KeyEvent evt)//GEN-FIRST:event_pnlCompsKeyReleased
     {//GEN-HEADEREND:event_pnlCompsKeyReleased
-        Log.entering("pnlCompsKeyReleased", evt);
+        LOG.entering("pnlCompsKeyReleased", evt);
         if (m_proxy != null)
         {
             m_proxy.proxyKeyReleased(evt);
@@ -103,7 +103,7 @@ public class WrapScrollPanel extends javax.swing.JPanel
     @Override
     public Component add(Component comp)
     {
-        //Log.entering("add", comp);
+        //LOG.entering("add", comp);
         return pnlComps.add(comp);
     }
 

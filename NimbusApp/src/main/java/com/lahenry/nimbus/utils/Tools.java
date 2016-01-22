@@ -23,7 +23,7 @@ import org.w3c.dom.Document;
  */
 public class Tools
 {
-    private static final Logit Log = Logit.create(Tools.class.getName());
+    private static final Logit LOG = Logit.create(Tools.class.getName());
 
     public static boolean isNullOrEmpty(String str)
     {
@@ -43,7 +43,7 @@ public class Tools
         }
         catch (InterruptedException ex)
         {
-            Log.throwing("wait", ex);
+            LOG.throwing("wait", ex);
         }
     }
 
@@ -60,7 +60,7 @@ public class Tools
         }
         catch (InterruptedException ex)
         {
-            Log.throwing("wait", ex);
+            LOG.throwing("wait", ex);
         }
     }
 
@@ -77,7 +77,7 @@ public class Tools
         }
         catch (IllegalMonitorStateException ex)
         {
-            Log.throwing("notify", ex);
+            LOG.throwing("notify", ex);
         }
     }
 
@@ -94,7 +94,7 @@ public class Tools
         }
         catch (IllegalMonitorStateException ex)
         {
-            Log.throwing("notifyAll", ex);
+            LOG.throwing("notifyAll", ex);
         }
     }
 

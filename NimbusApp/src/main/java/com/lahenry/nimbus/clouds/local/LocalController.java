@@ -17,14 +17,14 @@ import java.io.File;
 public class LocalController
     extends CloudControllerAdapter<java.io.File>
 {
-    private static final Logit Log = Logit.create(LocalController.class.getName());
+    private static final Logit LOG = Logit.create(LocalController.class.getName());
 
     public LocalController()
     {
         super(LocalController.class.getName(), new LocalModel());
 
         this.
-        Log.entering("<init>");
+        LOG.entering("<init>");
 
         //m_rootFolder = m_model.getIdFromItem(getRoot());
     }

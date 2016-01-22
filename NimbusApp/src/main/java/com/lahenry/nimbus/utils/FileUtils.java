@@ -13,7 +13,7 @@ import java.io.File;
  */
 public final class FileUtils
 {
-    private static final Logit Log = Logit.create(FileUtils.class.getName());
+    private static final Logit LOG = Logit.create(FileUtils.class.getName());
 
     public static boolean mkdir(String abspath)
     {

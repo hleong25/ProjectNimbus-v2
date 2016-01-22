@@ -16,7 +16,7 @@ import com.lahenry.nimbus.utils.Logit;
 public class LocalToGDriveTransferAdapter
     extends CloudTransferAdapter<java.io.File, com.google.api.services.drive.model.File>
 {
-    private static final Logit Log = Logit.create(LocalToGDriveTransferAdapter.class.getName());
+    private static final Logit LOG = Logit.create(LocalToGDriveTransferAdapter.class.getName());
 
     public LocalToGDriveTransferAdapter(GlobalCacheKey sourceCacheKey,
                                         java.io.File source,

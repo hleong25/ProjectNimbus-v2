@@ -80,7 +80,7 @@ public class TablePanel extends javax.swing.JPanel
     @Override
     public Component add(Component comp)
     {
-        //Log.entering("add", comp);
+        //LOG.entering("add", comp);
         //return pnlTable.add(comp);
         return comp;
     }

@@ -28,7 +28,7 @@ import javax.swing.JOptionPane;
 public abstract class CloudControllerAdapter<T>
     implements ICloudController<T>
 {
-    private static final Logit Log = Logit.create(CloudControllerAdapter.class.getName());
+    private static final Logit LOG = Logit.create(CloudControllerAdapter.class.getName());
 
     protected final ICloudModel<T> m_model;
 
@@ -43,7 +43,7 @@ public abstract class CloudControllerAdapter<T>
 
     protected CloudControllerAdapter(final String className, ICloudModel<T> model)
     {
-        Log.entering("<init>");
+        LOG.entering("<init>");
 
         m_model = model;
 
@@ -84,7 +84,7 @@ public abstract class CloudControllerAdapter<T>
     @Override
     public boolean login(Component parentComponent, String uniqueid)
     {
-        Log.entering("login", new Object[]{"parentComponent", uniqueid});
+        LOG.entering("login", new Object[]{"parentComponent", uniqueid});
         boolean login_ok = false;
 
         if (uniqueid.equals(AccountInfo.NEW_ACCOUNT))
@@ -108,13 +108,13 @@ public abstract class CloudControllerAdapter<T>
     @Override
     public String getUniqueId()
     {
-        Log.entering("getUniqueId");
+        LOG.entering("getUniqueId");
         return m_model.getUniqueId();
     }
 
     protected String getAuthCode(Component parentComponent)
     {
-        Log.entering("getAuthCode", new Object[]{"parentComponent"});
+        LOG.entering("getAuthCode", new Object[]{"parentComponent"});
 
         try
         {
@@ -126,12 +126,12 @@ public abstract class CloudControllerAdapter<T>
             BrowserLauncher launcher = new BrowserLauncher();
             launcher.setNewWindowPolicy(true);
 
-            Log.fine("Opening new browser to "+authUrl);
+            LOG.fine("Opening new browser to "+authUrl);
             launcher.openURLinBrowser(authUrl);
         }
         catch (BrowserLaunchingInitializingException | UnsupportedOperatingSystemException ex)
         {
-            Log.throwing("getAuthCode", ex);
+            LOG.throwing("getAuthCode", ex);
         }
 
         String authCode = JOptionPane.showInputDialog(parentComponent, "Input the authentication code here");
@@ -139,14 +139,14 @@ public abstract class CloudControllerAdapter<T>
         if (authCode != null)
             authCode = authCode.trim();
 
-        Log.info("Auth code: "+authCode);
+        LOG.info("Auth code: "+authCode);
         return authCode;
     }
 
     @Override
     public T getRoot()
     {
-        Log.entering("getRoot");
+        LOG.entering("getRoot");
 
         T root = m_model.getRoot();
         return root;
@@ -155,11 +155,11 @@ public abstract class CloudControllerAdapter<T>
     @Override
     public T getItemById(String id, boolean useCache)
     {
-        Log.entering("getItemById", new Object[]{id, useCache});
+        LOG.entering("getItemById", new Object[]{id, useCache});
 
         if (useCache && m_cachedFiles.containsKey(id))
         {
-            Log.info("Cache hit: "+id);
+            LOG.info("Cache hit: "+id);
             return m_cachedFiles.get(id);
         }
 
@@ -177,7 +177,7 @@ public abstract class CloudControllerAdapter<T>
         if (file != null)
         {
             String fileId = m_model.getIdByItem(file);
-            Log.info("Add cache: "+fileId);
+            LOG.info("Add cache: "+fileId);
             m_cachedFiles.put(fileId, file);
         }
 
@@ -187,7 +187,7 @@ public abstract class CloudControllerAdapter<T>
     @Override
     public List<T> getChildrenItems(T parent, boolean useCache)
     {
-        Log.entering("getChildrenItems", new Object[]{parent, useCache});
+        LOG.entering("getChildrenItems", new Object[]{parent, useCache});
 
         if (parent == null)
         {
@@ -196,7 +196,7 @@ public abstract class CloudControllerAdapter<T>
 
         if (useCache && m_cachedListFiles.containsKey(parent))
         {
-            Log.info("Cache hit: "+m_model.getIdByItem(parent));
+            LOG.info("Cache hit: "+m_model.getIdByItem(parent));
             return m_cachedListFiles.get(parent);
         }
 
@@ -204,7 +204,7 @@ public abstract class CloudControllerAdapter<T>
 
         Collections.sort(files, m_comparatorFiles);
 
-        Log.fine("Add cache: "+m_model.getIdByItem(parent));
+        LOG.fine("Add cache: "+m_model.getIdByItem(parent));
         m_cachedListFiles.put(parent, files);
 
         return files;

@@ -21,7 +21,7 @@ import javax.swing.JPanel;
  */
 public class AllCardsPanel extends javax.swing.JPanel
 {
-    private static final Logit Log = Logit.create(AllCardsPanel.class.getName());
+    private static final Logit LOG = Logit.create(AllCardsPanel.class.getName());
 
     public static enum ViewType
     {
@@ -98,7 +98,7 @@ public class AllCardsPanel extends javax.swing.JPanel
     {
         String cardName = ViewTypeStrings.get(type);
 
-        Log.entering("setView", new Object[]{type, cardName});
+        LOG.entering("setView", new Object[]{type, cardName});
 
         m_cards.show(pnlAllCards, cardName);
     }
@@ -115,7 +115,7 @@ public class AllCardsPanel extends javax.swing.JPanel
     @Override
     public Component add(Component comp)
     {
-        //Log.entering("add", comp);
+        //LOG.entering("add", comp);
 
         pnlWrap.add(comp);
         pnlTable.add(comp);

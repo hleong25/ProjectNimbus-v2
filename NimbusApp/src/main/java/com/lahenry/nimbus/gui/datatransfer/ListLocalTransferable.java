@@ -20,7 +20,7 @@ import java.util.List;
 public class ListLocalTransferable
     extends TransferableAdapter<File>
 {
-    private static final Logit Log = Logit.create(ListLocalTransferable.class.getName());
+    private static final Logit LOG = Logit.create(ListLocalTransferable.class.getName());
 
     private static final DataFlavor[] LocalFlavors = new DataFlavor[]{
         LocalFileFlavor
@@ -39,13 +39,13 @@ public class ListLocalTransferable
 
     public static ListLocalTransferable createInstance(ICloudController controller, List<FileItemPanel> pnls)
     {
-        Log.entering("createInstance", new Object[] {controller, pnls});
+        LOG.entering("createInstance", new Object[] {controller, pnls});
 
         ListLocalTransferable list = new ListLocalTransferable(controller);
 
         for (FileItemPanel pnl : pnls)
         {
-            Log.fine(pnl.getFileItem().getCloudController().getCloudType().toString());
+            LOG.fine(pnl.getFileItem().getCloudController().getCloudType().toString());
             if (pnl.getFileItem().getCloudController().getCloudType() != CloudType.LOCAL_FILE_SYSTEM)
             {
                 continue;

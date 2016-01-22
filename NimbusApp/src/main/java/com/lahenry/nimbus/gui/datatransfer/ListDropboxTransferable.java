@@ -20,7 +20,7 @@ import java.util.List;
 public class ListDropboxTransferable
     extends TransferableAdapter<DbxEntry>
 {
-    private static final Logit Log = Logit.create(ListDropboxTransferable.class.getName());
+    private static final Logit LOG = Logit.create(ListDropboxTransferable.class.getName());
 
     private static final DataFlavor[] DropboxFlavors = new DataFlavor[]{
         DropboxFileFlavor

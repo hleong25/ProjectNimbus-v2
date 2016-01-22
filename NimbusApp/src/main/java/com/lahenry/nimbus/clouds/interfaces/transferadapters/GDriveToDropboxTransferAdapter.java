@@ -17,7 +17,7 @@ import com.lahenry.nimbus.utils.Logit;
 public class GDriveToDropboxTransferAdapter
     extends CloudTransferAdapter<com.google.api.services.drive.model.File, DbxEntry>
 {
-    private static final Logit Log = Logit.create(GDriveToDropboxTransferAdapter.class.getName());
+    private static final Logit LOG = Logit.create(GDriveToDropboxTransferAdapter.class.getName());
 
     public GDriveToDropboxTransferAdapter(GlobalCacheKey sourceCacheKey,
                                           File source,
@@ -25,7 +25,7 @@ public class GDriveToDropboxTransferAdapter
                                           DbxEntry target)
     {
         super(sourceCacheKey, source, targetCacheKey, target);
-        //Log.entering("<init>", new Object[]{sourceCacheKey, source, targetCacheKey, target});
+        //LOG.entering("<init>", new Object[]{sourceCacheKey, source, targetCacheKey, target});
     }
 
     @Override

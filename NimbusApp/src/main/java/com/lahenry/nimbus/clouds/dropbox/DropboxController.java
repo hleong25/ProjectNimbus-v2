@@ -18,13 +18,13 @@ import com.lahenry.nimbus.utils.Tools;
 public class DropboxController
     extends CloudControllerAdapter<DbxEntry>
 {
-    private static final Logit Log = Logit.create(DropboxController.class.getName());
+    private static final Logit LOG = Logit.create(DropboxController.class.getName());
 
     public DropboxController()
     {
         super(DropboxController.class.getName(), new DropboxModel());
 
-        Log.entering("<init>");
+        LOG.entering("<init>");
 
         m_rootFolder = DropboxConstants.FOLDER_ROOT;
     }
@@ -38,11 +38,11 @@ public class DropboxController
     @Override
     public DbxEntry getParent(DbxEntry item)
     {
-        Log.entering("getParent", (item != null ? item.path : "null"));
+        LOG.entering("getParent", (item != null ? item.path : "null"));
 
         if (item == null)
         {
-            Log.warning("item is null");
+            LOG.warning("item is null");
             return null;
         }
 
@@ -61,7 +61,7 @@ public class DropboxController
             parentPath = DropboxConstants.FOLDER_ROOT;
         }
 
-        Log.fine("Parent: "+parentPath);
+        LOG.fine("Parent: "+parentPath);
         return getItemById(parentPath, true);
     }
 

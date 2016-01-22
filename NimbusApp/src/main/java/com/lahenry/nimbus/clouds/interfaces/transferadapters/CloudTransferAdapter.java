@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public abstract class CloudTransferAdapter<S, T>
     implements ICloudTransfer<S, T>
 {
-    private static final Logit Log = Logit.create(CloudTransferAdapter.class.getName());
+    private static final Logit LOG = Logit.create(CloudTransferAdapter.class.getName());
 
     protected final GlobalCacheKey m_sourceCacheKey;
     protected final S m_source;
@@ -43,7 +43,7 @@ public abstract class CloudTransferAdapter<S, T>
                                 GlobalCacheKey targetCacheKey,
                                 T target)
     {
-        Log.entering("<init>", new Object[]{sourceCacheKey, source, targetCacheKey, target});
+        LOG.entering("<init>", new Object[]{sourceCacheKey, source, targetCacheKey, target});
 
         m_sourceCacheKey = sourceCacheKey;
         m_source = source;

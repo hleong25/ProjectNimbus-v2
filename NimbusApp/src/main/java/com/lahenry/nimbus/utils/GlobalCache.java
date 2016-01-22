@@ -15,7 +15,7 @@ import java.util.Map;
 public final class GlobalCache
     extends HashMap<GlobalCacheKey, Object>
 {
-    private static final Logit Log = Logit.create(GlobalCache.class.getName());
+    private static final Logit LOG = Logit.create(GlobalCache.class.getName());
 
     public interface IProperties
     {
@@ -60,16 +60,16 @@ public final class GlobalCache
         {
             if (containsKey(gck) && (get(gck) != value))
             {
-                Log.info("Overriding cache:"+gck);
+                LOG.info("Overriding cache:"+gck);
             }
             else
             {
-                Log.info("Adding cache:"+gck);
+                LOG.info("Adding cache:"+gck);
             }
 
             return super.put(gck, value);
         }
-        Log.warning("Adding cache failed.");
+        LOG.warning("Adding cache failed.");
         return null;
     }
 

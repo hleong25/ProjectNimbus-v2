@@ -20,7 +20,7 @@ import java.util.List;
 public class ListGDriveTransferable
     extends TransferableAdapter<File>
 {
-    private static final Logit Log = Logit.create(ListGDriveTransferable.class.getName());
+    private static final Logit LOG = Logit.create(ListGDriveTransferable.class.getName());
 
     private static final DataFlavor[] GDriveFlavors = new DataFlavor[]{
         GDriveFileFlavor

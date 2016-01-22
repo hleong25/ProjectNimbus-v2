@@ -21,7 +21,7 @@ import org.w3c.dom.NodeList;
  */
 public class AccountInfo
 {
-    private static final Logit Log = Logit.create(AccountInfo.class.getName());
+    private static final Logit LOG = Logit.create(AccountInfo.class.getName());
 
     public static final String NEW_ACCOUNT = "@@newacount@@";
 
@@ -64,7 +64,7 @@ public class AccountInfo
 
         if (!fragment.getNodeName().equals(ELEM_ROOT))
         {
-            Log.warning("Parsing element, not '"+ELEM_ROOT+"'");
+            LOG.warning("Parsing element, not '"+ELEM_ROOT+"'");
             return null;
         }
 
@@ -79,7 +79,7 @@ public class AccountInfo
             }
             catch (NumberFormatException ex)
             {
-                Log.warning("Failed to parse version");
+                LOG.warning("Failed to parse version");
                 return null;
             }
         }
@@ -123,7 +123,7 @@ public class AccountInfo
                 }
                 else
                 {
-                    Log.severe("Unknown cloud type: "+data);
+                    LOG.severe("Unknown cloud type: "+data);
                     return null;
                 }
 

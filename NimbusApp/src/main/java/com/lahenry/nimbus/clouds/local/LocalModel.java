@@ -33,7 +33,7 @@ import javax.swing.filechooser.FileSystemView;
  */
 public class LocalModel implements ICloudModel<java.io.File>
 {
-    private static final Logit Log = Logit.create(LocalModel.class.getName());
+    private static final Logit LOG = Logit.create(LocalModel.class.getName());
 
     public LocalModel()
     {
@@ -138,7 +138,7 @@ public class LocalModel implements ICloudModel<java.io.File>
     @Override
     public void transfer(final ICloudTransfer<?, java.io.File> transfer)
     {
-        Log.entering("transfering", new Object[]{transfer});
+        LOG.entering("transfering", new Object[]{transfer});
 
         final int BUFFER_SIZE = 256*1024;
         final InputStream is = transfer.getInputStream();
@@ -176,8 +176,8 @@ public class LocalModel implements ICloudModel<java.io.File>
             {
                 final long elapsedNano = System.nanoTime() - startTime;
 
-                Log.fine(Tools.formatTransferMsg(elapsedNano, totalSent));
-                Log.finer(hist.toString());
+                LOG.fine(Tools.formatTransferMsg(elapsedNano, totalSent));
+                LOG.finer(hist.toString());
 
                 progress.finish();
 
@@ -186,28 +186,28 @@ public class LocalModel implements ICloudModel<java.io.File>
             }
             else
             {
-                Log.warning("Transferred aborted");
+                LOG.warning("Transferred aborted");
             }
         }
         catch (IOException ex)
         {
-            Log.throwing("transfer", ex);
+            LOG.throwing("transfer", ex);
         }
         finally
         {
             try
             {
-                Log.fine("Closing input stream");
+                LOG.fine("Closing input stream");
                 if (is != null) is.close();
             }
             catch (IOException ex)
             {
-                Log.throwing("transfer", ex);
+                LOG.throwing("transfer", ex);
             }
 
             try
             {
-                Log.fine("Closing output stream");
+                LOG.fine("Closing output stream");
                 if (os != null)
                 {
                     os.flush();
@@ -216,7 +216,7 @@ public class LocalModel implements ICloudModel<java.io.File>
             }
             catch (IOException ex)
             {
-                Log.throwing("transfer", ex);
+                LOG.throwing("transfer", ex);
             }
         }
     }
@@ -234,7 +234,7 @@ public class LocalModel implements ICloudModel<java.io.File>
         }
         catch (FileNotFoundException ex)
         {
-            Log.throwing("getDownloadStream", ex);
+            LOG.throwing("getDownloadStream", ex);
         }
 
         return null;

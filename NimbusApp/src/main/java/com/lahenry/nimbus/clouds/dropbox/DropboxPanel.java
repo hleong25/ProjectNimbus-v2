@@ -32,7 +32,7 @@ import java.awt.dnd.DropTarget;
 public class DropboxPanel
     extends CloudPanelAdapter<DbxEntry, DropboxController>
 {
-    private static final Logit Log = Logit.create(DropboxPanel.class.getName());
+    private static final Logit LOG = Logit.create(DropboxPanel.class.getName());
 
     /**
      * Creates new form DropboxPanel
@@ -41,7 +41,7 @@ public class DropboxPanel
     {
         super();
 
-        Log.entering("<init>");
+        LOG.entering("<init>");
         initComponents();
     }
 
@@ -89,7 +89,7 @@ public class DropboxPanel
     public void initPanel(ICloudController<?> controller)
     //public void initPanel(DropboxController controller)
     {
-        Log.entering("initPanel", new Object[]{controller});
+        LOG.entering("initPanel", new Object[]{controller});
         m_controller = (DropboxController) controller;
 
         pnlFiles.setProxy(this);
@@ -111,14 +111,14 @@ public class DropboxPanel
     @Override
     public String getAbsolutePath(DbxEntry item)
     {
-        //Log.entering("getAbsolutePath", new Object[]{item.toStringMultiline()});
+        //LOG.entering("getAbsolutePath", new Object[]{item.toStringMultiline()});
         return item.path;
     }
 
     @Override
     public void setCurrentPath(DbxEntry path)
     {
-        Log.entering("setCurrentPath", new Object[]{path.path});
+        LOG.entering("setCurrentPath", new Object[]{path.path});
 
         super.setCurrentPath(path);
         txtPath.setText(getAbsolutePath(path));
@@ -152,7 +152,7 @@ public class DropboxPanel
     @Override
     public XferHolder<?, DbxEntry> createXferHolder(GlobalCacheKey sourceCacheKey, Object input)
     {
-        Log.entering("createXferHolder", new Object[]{sourceCacheKey, input});
+        LOG.entering("createXferHolder", new Object[]{sourceCacheKey, input});
         final GlobalCacheKey targetCacheKey = GlobalCache.getInstance().getKey(m_controller);
         final ICloudController genericInputController = (ICloudController) GlobalCache.getInstance().get(sourceCacheKey);
         switch (genericInputController.getCloudType())

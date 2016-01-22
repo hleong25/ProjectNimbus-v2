@@ -16,7 +16,7 @@ import javax.swing.ImageIcon;
  */
 public class AccountInfoButton extends javax.swing.JButton
 {
-    private static final Logit Log = Logit.create(AccountInfoButton.class.getName());
+    private static final Logit LOG = Logit.create(AccountInfoButton.class.getName());
 
     protected final AccountInfo m_account;
 

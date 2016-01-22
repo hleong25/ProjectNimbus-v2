@@ -15,7 +15,7 @@ import java.util.Objects;
 public final class GlobalCacheKey
     implements Serializable
 {
-    private static final Logit Log = Logit.create(GlobalCacheKey.class.getName());
+    private static final Logit LOG = Logit.create(GlobalCacheKey.class.getName());
 
     private final String m_key;
 

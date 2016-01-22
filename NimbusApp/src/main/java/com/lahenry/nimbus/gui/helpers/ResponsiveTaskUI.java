@@ -13,7 +13,7 @@ import com.lahenry.nimbus.utils.Logit;
  */
 public class ResponsiveTaskUI
 {
-    private static final Logit Log = Logit.create(ResponsiveTaskUI.class.getName());
+    private static final Logit LOG = Logit.create(ResponsiveTaskUI.class.getName());
 
     public interface IResponsiveTask
     {
@@ -47,7 +47,7 @@ public class ResponsiveTaskUI
         }
         catch (InterruptedException ex)
         {
-            Log.throwing("yield", ex);
+            LOG.throwing("yield", ex);
         }
     }
 }

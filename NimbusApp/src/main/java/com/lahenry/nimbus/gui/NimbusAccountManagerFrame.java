@@ -30,7 +30,7 @@ import javax.swing.JOptionPane;
  */
 public class NimbusAccountManagerFrame extends javax.swing.JFrame
 {
-    private static final Logit Log = Logit.create(NimbusAccountManagerFrame.class.getName());
+    private static final Logit LOG = Logit.create(NimbusAccountManagerFrame.class.getName());
 
     protected AccountInfo m_account = null;
 
@@ -39,7 +39,7 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
      */
     public NimbusAccountManagerFrame()
     {
-        Log.entering("<init>");
+        LOG.entering("<init>");
         initComponents();
     }
 
@@ -291,7 +291,7 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
 
     protected void addAccount(final CloudType cloudType)
     {
-        Log.entering("addAccount", new Object[] {cloudType});
+        LOG.entering("addAccount", new Object[] {cloudType});
 
         BusyTaskCursor.doTask(this, new BusyTaskCursor.IBusyTask()
         {
@@ -329,7 +329,7 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
 
         for (final AccountInfo account : accounts)
         {
-            //Log.fine("Account: "+account.getId());
+            //LOG.fine("Account: "+account.getId());
 
             AccountInfoButton btn = new AccountInfoButton(account);
             gridbag.gridy++;
@@ -345,7 +345,7 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    //Log.fine("Clicked:" +account.getId());
+                    //LOG.fine("Clicked:" +account.getId());
 
                     NimbusAccountManagerFrame.this.showAccount(account);
                 }
@@ -390,7 +390,7 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
                 break;
 
             default:
-                Log.severe("Failed to add '"+cloudType.toString()+"' acount.");
+                LOG.severe("Failed to add '"+cloudType.toString()+"' acount.");
                 return;
         }
 
@@ -403,14 +403,14 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
 
             if (frame != null)
             {
-                Log.info("Showing "+cloudType.toString());
+                LOG.info("Showing "+cloudType.toString());
 
                 // show it
                 frame.runLater();
             }
             else
             {
-                //Log.warning(MessageFormat.format("Unknown type: {0}", type.toString()));
+                //LOG.warning(MessageFormat.format("Unknown type: {0}", type.toString()));
             }
 
             // kill me since we're good now
@@ -418,7 +418,7 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
         }
         else
         {
-            Log.severe("Failed to login");
+            LOG.severe("Failed to login");
         }
     }
 

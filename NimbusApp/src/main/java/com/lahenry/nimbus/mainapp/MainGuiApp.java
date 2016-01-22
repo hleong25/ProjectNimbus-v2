@@ -14,12 +14,12 @@ import com.lahenry.nimbus.utils.Logit;
  */
 public class MainGuiApp
 {
-    private static final Logit Log = Logit.create(MainGuiApp.class.getName());
+    private static final Logit LOG = Logit.create(MainGuiApp.class.getName());
 
     public static void main(String[] args)
     {
         Logit.init();
-        Log.entering("main");
+        LOG.entering("main");
 
         setupPlatform();
 
@@ -44,7 +44,7 @@ public class MainGuiApp
         }
         catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex)
         {
-            Log.throwing("setupLookAndFeel", ex);
+            LOG.throwing("setupLookAndFeel", ex);
         }
 
     }

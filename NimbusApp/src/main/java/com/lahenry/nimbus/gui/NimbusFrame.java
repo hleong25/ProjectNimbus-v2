@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class NimbusFrame extends javax.swing.JFrame
 {
-    private static final Logit Log = Logit.create(NimbusFrame.class.getName());
+    private static final Logit LOG = Logit.create(NimbusFrame.class.getName());
 
     private final Runnable m_run;
 
@@ -35,7 +35,7 @@ public class NimbusFrame extends javax.swing.JFrame
      */
     public NimbusFrame()
     {
-        Log.entering("<init>");
+        LOG.entering("<init>");
         initComponents();
 
         m_cloudPanels.add(pnlLocal);
@@ -54,7 +54,7 @@ public class NimbusFrame extends javax.swing.JFrame
 
     public static NimbusFrame setupMainPanel(CloudType type, ICloudController<?> controller)
     {
-        Log.entering("setupMainPanel");
+        LOG.entering("setupMainPanel");
 
         NimbusFrame frame = new NimbusFrame();
 
@@ -212,23 +212,23 @@ public class NimbusFrame extends javax.swing.JFrame
 
     public void runLater()
     {
-        Log.entering("runLater");
+        LOG.entering("runLater");
 
         java.awt.EventQueue.invokeLater(m_run);
     }
 
     public void runAndWait()
     {
-        Log.entering("runAndWait");
+        LOG.entering("runAndWait");
 
         try
         {
-            Log.fine("EventQueue.invokeAndWait(run)");
+            LOG.fine("EventQueue.invokeAndWait(run)");
             java.awt.EventQueue.invokeAndWait(m_run);
         }
         catch (InterruptedException | InvocationTargetException ex)
         {
-            Log.throwing("runAndWait", ex);
+            LOG.throwing("runAndWait", ex);
         }
     }
 
