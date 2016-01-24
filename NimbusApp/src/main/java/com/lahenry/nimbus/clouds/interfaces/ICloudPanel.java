@@ -28,8 +28,6 @@ public interface ICloudPanel<T, CC extends ICloudController<T>>
     String getAbsolutePath(T item);
     void setCurrentPath(T path);
 
-    //String getHumanName(T item);
-
     AllCardsPanel getFilesPanel();
     FileItemPanel createFileItemPanel(final T file);
 

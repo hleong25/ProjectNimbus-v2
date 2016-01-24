@@ -29,4 +29,6 @@ public interface ICloudController<T>
     // target must be of type T
     void transfer(ICloudTransfer</*source*/?, /*target*/T> transfer);
     InputStream getDownloadStream(T downloadFile);
+
+    String getItemName(T item);
 }

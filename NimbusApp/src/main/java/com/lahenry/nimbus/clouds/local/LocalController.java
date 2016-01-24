@@ -39,4 +39,10 @@ public class LocalController
     {
         return item.getParentFile();
     }
+
+    @Override
+    public String getItemName(File item)
+    {
+        return item.getName();
+    }
 }

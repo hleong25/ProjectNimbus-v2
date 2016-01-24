@@ -63,6 +63,6 @@ public class LocalFileItem implements IFileItem<File>
     @Override
     public String getLabel()
     {
-        return m_item.getName();
+        return m_controller.getItemName(m_item);
     }
 }

@@ -65,4 +65,10 @@ public class DropboxController
         return getItemById(parentPath, true);
     }
 
+    @Override
+    public String getItemName (DbxEntry item)
+    {
+        return item.name;
+    }
+
 }

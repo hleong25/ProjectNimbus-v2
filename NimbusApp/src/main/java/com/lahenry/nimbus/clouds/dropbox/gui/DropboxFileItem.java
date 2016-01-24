@@ -60,7 +60,7 @@ public class DropboxFileItem implements IFileItem<DbxEntry>
     @Override
     public String getLabel()
     {
-        return m_entry.name;
+        return m_controller.getItemName(m_entry);
     }
 
 }

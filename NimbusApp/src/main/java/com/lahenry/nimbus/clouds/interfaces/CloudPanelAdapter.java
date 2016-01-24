@@ -94,7 +94,7 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
 
         InputStream istream = m_controller.getDownloadStream(item);
 
-        ImageViewerFrame.show(this, getAbsolutePath(item), istream);
+        ImageViewerFrame.show(this, m_controller.getItemName(item), istream);
     }
 
     @Override

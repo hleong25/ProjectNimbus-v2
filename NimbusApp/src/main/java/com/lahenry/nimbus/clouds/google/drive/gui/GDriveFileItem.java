@@ -87,7 +87,7 @@ public class GDriveFileItem implements IFileItem<File>
     @Override
     public String getLabel()
     {
-        return m_item.getTitle();
+        return m_controller.getItemName(m_item);
     }
 
 }

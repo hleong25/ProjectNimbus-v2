@@ -6,6 +6,7 @@
 package com.lahenry.nimbus.gui;
 
 import com.lahenry.nimbus.gui.helpers.BusyTaskCursor;
+import com.lahenry.nimbus.mainapp.AppInfo;
 import com.lahenry.nimbus.utils.Logit;
 import java.awt.Component;
 import java.io.IOException;
@@ -54,7 +55,7 @@ public class ImageViewerFrame extends javax.swing.JFrame
                     frame.dispose();
 
                     JOptionPane.showMessageDialog(
-                        null,
+                        parent,
                         "Failed to load image. Error: "+ex.getMessage(),
                         "Image error",
                         JOptionPane.ERROR_MESSAGE);
@@ -68,6 +69,17 @@ public class ImageViewerFrame extends javax.swing.JFrame
     protected void setImage(InputStream istream) throws IOException
     {
         pnlImage.setImage(istream);
+    }
+
+    @Override
+    public void setTitle(String title)
+    {
+        final String APP_NAME = " - " + AppInfo.NAME;
+
+        if (title.endsWith(APP_NAME))
+            super.setTitle(title);
+        else
+            super.setTitle(title + APP_NAME);
     }
 
     /**

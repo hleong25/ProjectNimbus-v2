@@ -55,4 +55,10 @@ public class GDriveController
 
         return null;
     }
+
+    @Override
+    public String getItemName (File item)
+    {
+        return item.getTitle();
+    }
 }
