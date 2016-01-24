@@ -138,6 +138,12 @@ public class DropboxPanel
             {
                 responsiveShowFiles(item, true);
             }
+
+            @Override
+            public void onOpenFile(final DbxEntry item)
+            {
+                responsiveOpenFile(item);
+            }
         });
 
         return pnl;

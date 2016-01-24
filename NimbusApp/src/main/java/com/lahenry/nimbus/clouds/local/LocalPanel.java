@@ -126,6 +126,12 @@ public class LocalPanel
             {
                 responsiveShowFiles(item, true);
             }
+
+            @Override
+            public void onOpenFile(final File item)
+            {
+                responsiveOpenFile(item);
+            }
         });
 
         return pnl;

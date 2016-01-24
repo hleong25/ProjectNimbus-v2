@@ -171,6 +171,12 @@ public class GDrivePanel
             {
                 responsiveShowFiles(item, true);
             }
+
+            @Override
+            public void onOpenFile(final com.google.api.services.drive.model.File item)
+            {
+                responsiveOpenFile(item);
+            }
         });
 
         return pnl;

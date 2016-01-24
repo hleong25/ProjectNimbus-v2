@@ -28,12 +28,16 @@ public interface ICloudPanel<T, CC extends ICloudController<T>>
     String getAbsolutePath(T item);
     void setCurrentPath(T path);
 
+    //String getHumanName(T item);
+
     AllCardsPanel getFilesPanel();
     FileItemPanel createFileItemPanel(final T file);
 
     List<Component> getFiles(final T parent, final boolean useCache);
     void showFiles(final T parent, final boolean useCache);
     void responsiveShowFiles(final T path, final boolean useCache);
+
+    void responsiveOpenFile(final T item);
 
     XferHolder<?, T> createXferHolder(GlobalCacheKey sourceCacheKey, Object input);
     List<XferHolder<?, T>> generateTransferList(TransferableContainer tc);

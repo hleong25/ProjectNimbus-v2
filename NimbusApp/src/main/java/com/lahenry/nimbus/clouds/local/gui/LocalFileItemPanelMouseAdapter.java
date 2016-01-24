@@ -6,6 +6,7 @@
 package com.lahenry.nimbus.clouds.local.gui;
 
 import com.lahenry.nimbus.gui.components.FileItemPanelMouseAdapter;
+import com.lahenry.nimbus.utils.Logit;
 import java.io.File;
 
 /**
@@ -15,6 +16,8 @@ import java.io.File;
 public abstract class LocalFileItemPanelMouseAdapter
     extends FileItemPanelMouseAdapter<File>
 {
+    private static final Logit LOG = Logit.create(LocalFileItemPanelMouseAdapter.class.getName());
+
     public LocalFileItemPanelMouseAdapter(File item)
     {
         super(item);

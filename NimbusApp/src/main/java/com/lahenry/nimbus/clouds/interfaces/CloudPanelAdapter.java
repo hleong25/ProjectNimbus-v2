@@ -5,6 +5,7 @@
  */
 package com.lahenry.nimbus.clouds.interfaces;
 
+import com.lahenry.nimbus.gui.ImageViewerFrame;
 import com.lahenry.nimbus.gui.components.FileItemPanel;
 import com.lahenry.nimbus.gui.datatransfer.TransferableContainer;
 import com.lahenry.nimbus.gui.helpers.BusyTaskCursor;
@@ -19,6 +20,7 @@ import com.lahenry.nimbus.utils.Logit;
 import com.lahenry.nimbus.utils.Tools;
 import java.awt.Component;
 import java.awt.event.KeyEvent;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -83,6 +85,16 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
                 showFiles(path, useCache);
             }
         });
+    }
+
+    @Override
+    public void responsiveOpenFile(final T item)
+    {
+        LOG.entering("responsiveOpenFile", new Object[]{getAbsolutePath(item)});
+
+        InputStream istream = m_controller.getDownloadStream(item);
+
+        ImageViewerFrame.show(this, getAbsolutePath(item), istream);
     }
 
     @Override

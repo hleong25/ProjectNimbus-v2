@@ -23,6 +23,7 @@ public abstract class FileItemPanelMouseAdapter<T> extends MouseAdapter
 
     public abstract boolean isFolder(final T item);
     public abstract void onOpenFolder(final T item);
+    public abstract void onOpenFile(final T item);
 
     @Override
     public void mouseClicked(MouseEvent e)
@@ -35,6 +36,10 @@ public abstract class FileItemPanelMouseAdapter<T> extends MouseAdapter
             if (isFolder(m_item))
             {
                 onOpenFolder(m_item);
+            }
+            else
+            {
+                onOpenFile(m_item);
             }
         }
     }
