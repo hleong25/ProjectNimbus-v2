@@ -5,11 +5,9 @@
  */
 package com.lahenry.nimbus.gui;
 
-import com.lahenry.nimbus.gui.components.ImagePanel;
 import com.lahenry.nimbus.gui.helpers.BusyTaskCursor;
 import com.lahenry.nimbus.utils.Logit;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.swing.JOptionPane;
@@ -39,11 +37,10 @@ public class ImageViewerFrame extends javax.swing.JFrame
             @Override
             public void run()
             {
+                ImageViewerFrame frame = new ImageViewerFrame();
 
                 try
                 {
-                    ImageViewerFrame frame = new ImageViewerFrame();
-
                     frame.setTitle(title);
 
                     frame.setImage(istream);
@@ -53,6 +50,8 @@ public class ImageViewerFrame extends javax.swing.JFrame
                 catch (IOException ex)
                 {
                     LOG.throwing("show", ex);
+                    
+                    frame.dispose();
 
                     JOptionPane.showMessageDialog(
                         null,
