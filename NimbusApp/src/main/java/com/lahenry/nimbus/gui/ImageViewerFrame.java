@@ -27,6 +27,8 @@ public class ImageViewerFrame extends javax.swing.JFrame
     protected ImageViewerFrame ()
     {
         initComponents();
+
+        pnlScroll.getVerticalScrollBar().setUnitIncrement(16);
     }
 
     public static void show(final Component parent, final String title, final InputStream istream)
@@ -69,6 +71,8 @@ public class ImageViewerFrame extends javax.swing.JFrame
     protected void setImage(InputStream istream) throws IOException
     {
         pnlImage.setImage(istream);
+
+        setSize(pnlImage.getPreferredSize());
     }
 
     @Override

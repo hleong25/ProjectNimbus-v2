@@ -61,7 +61,6 @@ public class ImagePanel extends JPanel
                 try
                 {
                     ImageIO.setUseCache(false);
-                    //LOG.fine("Start reading image from stream");
 
                     long starttime = System.nanoTime();
                     m_image = ImageIO.read(istream);
@@ -76,11 +75,12 @@ public class ImagePanel extends JPanel
 
                     if (elapsed > 1500)
                     {
-                        //LOG.fine(String.format("Done reading image from stream in %.3fs", (elapsed/1000.0)));
                         LOG.fine(String.format("Reading image from stream took %.3fs", (elapsed/1000.0)));
                     }
 
-                    setPreferredSize(new Dimension(m_image.getWidth(), m_image.getHeight()));
+                    Dimension pnlsize = new Dimension(m_image.getWidth(), m_image.getHeight());
+                    setPreferredSize(pnlsize);
+                    setMaximumSize(pnlsize);
                 }
                 catch (IOException ex)
                 {
