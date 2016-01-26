@@ -6,6 +6,7 @@
 package com.lahenry.nimbus.gui.components;
 
 import com.lahenry.nimbus.utils.Logit;
+import com.lahenry.nimbus.utils.Timer;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -62,16 +63,14 @@ public class ImagePanel extends JPanel
                 {
                     ImageIO.setUseCache(false);
 
-                    long starttime = System.nanoTime();
+                    Timer timer = new Timer();
                     m_image = ImageIO.read(istream);
-                    long elapsed = System.nanoTime() - starttime;
+                    long elapsed = timer.getElapsedTimeAsMilliseconds();
 
                     if (m_image == null)
                     {
                         throw new IOException("Image buffer is null");
                     }
-
-                    elapsed = TimeUnit.MILLISECONDS.convert(elapsed, TimeUnit.NANOSECONDS);
 
                     if (elapsed > 1500)
                     {
