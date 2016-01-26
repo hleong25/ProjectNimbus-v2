@@ -25,22 +25,18 @@ mainClassName = 'com.lahenry.nimbus.mainapp.MainGuiApp'
 
 repositories {
     mavenCentral()
-    // You may define additional repositories, or even remove "mavenCentral()".
-    // Read more about repositories here:
-    //   http://www.gradle.org/docs/current/userguide/dependency_management.html#sec:repositories
 }
 
 dependencies {
-    // TODO: Add dependencies here ...
-    // You can read more about how to add dependency here:
-    //   http://www.gradle.org/docs/current/userguide/dependency_management.html#sec:how_to_declare_your_dependencies
     testCompile group: 'junit', name: 'junit', version: '4.10'
 
     compile fileTree(dir: 'lib', include: '*.jar')
 
     compile 'com.google.apis:google-api-services-drive:v2-rev200-1.21.0'
     compile 'com.dropbox.core:dropbox-core-sdk:1.8.2'
-    //compile 'com.box:box-java-sdk:2.0.0'
+    compile 'com.box:box-java-sdk:2.0.0'
+
+    compile 'com.googlecode.gstreamer-java:gstreamer-java:1.5'
 
 }
 
