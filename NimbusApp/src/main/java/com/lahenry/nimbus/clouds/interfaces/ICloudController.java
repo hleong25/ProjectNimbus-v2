@@ -31,4 +31,8 @@ public interface ICloudController<T>
     InputStream getDownloadStream(T downloadFile);
 
     String getItemName(T item);
+
+    boolean isTypeImage(T item);
+    boolean isTypeAudio(T item);
+    boolean isTypeVideo(T item);
 }

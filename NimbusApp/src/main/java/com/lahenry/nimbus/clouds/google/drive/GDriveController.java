@@ -61,4 +61,22 @@ public class GDriveController
     {
         return item.getTitle();
     }
+
+    @Override
+    public boolean isTypeImage (File item)
+    {
+        return item.getMimeType().equals(GDriveConstants.MIME_TYPE_PHOTO);
+    }
+
+    @Override
+    public boolean isTypeAudio (File item)
+    {
+        return item.getMimeType().equals(GDriveConstants.MIME_TYPE_AUDIO);
+    }
+
+    @Override
+    public boolean isTypeVideo (File item)
+    {
+        return item.getMimeType().equals(GDriveConstants.MIME_TYPE_VIDEO);
+    }
 }

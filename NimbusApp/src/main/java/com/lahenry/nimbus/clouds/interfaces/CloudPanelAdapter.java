@@ -93,8 +93,24 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
         LOG.entering("responsiveOpenFile", new Object[]{getAbsolutePath(item)});
 
         InputStream istream = m_controller.getDownloadStream(item);
+        String name = m_controller.getItemName(item);
 
-        ImageViewerFrame.show(this, m_controller.getItemName(item), istream);
+        if (m_controller.isTypeImage(item))
+        {
+            ImageViewerFrame.show(this, name, istream);
+        }
+        else if (m_controller.isTypeAudio(item))
+        {
+            JOptionPane.showMessageDialog(this, "TODO: open an audio file");
+        }
+        else if (m_controller.isTypeVideo(item))
+        {
+            JOptionPane.showMessageDialog(this, "TODO: open a video file");
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(this, "Cannot open unknown file type", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     @Override
