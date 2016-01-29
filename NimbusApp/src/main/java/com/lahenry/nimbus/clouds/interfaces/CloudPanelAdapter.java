@@ -5,6 +5,7 @@
  */
 package com.lahenry.nimbus.clouds.interfaces;
 
+import com.lahenry.nimbus.gui.GStreamerFrame;
 import com.lahenry.nimbus.gui.ImageViewerFrame;
 import com.lahenry.nimbus.gui.components.FileItemPanel;
 import com.lahenry.nimbus.gui.datatransfer.TransferableContainer;
@@ -15,6 +16,7 @@ import com.lahenry.nimbus.gui.helpers.XferHolder;
 import com.lahenry.nimbus.gui.interfaces.ILayoutToCloudPanelProxy;
 import com.lahenry.nimbus.gui.layout.AllCardsPanel;
 import com.lahenry.nimbus.mainapp.AppInfo;
+import com.lahenry.nimbus.utils.FileUtils;
 import com.lahenry.nimbus.utils.GlobalCacheKey;
 import com.lahenry.nimbus.utils.Logit;
 import com.lahenry.nimbus.utils.Tools;
@@ -101,7 +103,8 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
         }
         else if (m_controller.isTypeAudio(item))
         {
-            JOptionPane.showMessageDialog(this, "TODO: open an audio file");
+            //JOptionPane.showMessageDialog(this, "TODO: open an audio file");
+            GStreamerFrame.show(this, name, istream);
         }
         else if (m_controller.isTypeVideo(item))
         {
@@ -109,7 +112,8 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
         }
         else
         {
-            JOptionPane.showMessageDialog(this, "Cannot open unknown file type", "Error", JOptionPane.ERROR_MESSAGE);
+            String msg = "Cannot open '"+name+"' as type "+FileUtils.getMimeType(name);
+            JOptionPane.showMessageDialog(this, msg, "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
