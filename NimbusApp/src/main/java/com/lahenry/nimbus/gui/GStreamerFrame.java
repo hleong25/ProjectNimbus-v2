@@ -5,6 +5,7 @@
  */
 package com.lahenry.nimbus.gui;
 
+import com.lahenry.nimbus.gui.helpers.BusyTaskCursor;
 import com.lahenry.nimbus.mainapp.AppInfo;
 import com.lahenry.nimbus.utils.Logit;
 import java.awt.Component;
@@ -33,37 +34,60 @@ public class GStreamerFrame extends javax.swing.JFrame
 {
     private static final Logit LOG = Logit.create(GStreamerFrame.class.getName());
 
+    private Pipeline m_pipe;
+
     /**
      * Creates new form GStreamerFrame
      */
     public GStreamerFrame ()
     {
         initComponents();
+
+        Gst.init(AppInfo.NAME, new String[]{});
     }
 
     public static void show(final Component parent, final String title, final InputStream istream)
     {
         LOG.entering("show", new Object[]{istream});
 
-        Gst.init(AppInfo.NAME, new String[]{});
+        BusyTaskCursor.doTask(parent, new BusyTaskCursor.IBusyTask()
+        {
+            @Override
+            public void run()
+            {
+                GStreamerFrame frame = new GStreamerFrame();
+
+                frame.setTitle(title);
+
+                frame.init(title, istream);
+
+                frame.setVisible(true);
+
+                frame.play();
+            }
+        });
+
+    }
+
+    public void init(final String title, final InputStream istream)
+    {
+        m_pipe = new Pipeline("main pipeline");
 
         Element src = new InputStreamSrc(istream, title);
-
         DecodeBin2 decodeBin = (DecodeBin2) ElementFactory.make("decodebin2", "Decode Bin");
-        Pipeline pipe = new Pipeline("main pipeline");
-        pipe.addMany(src, decodeBin);
+        m_pipe.addMany(src, decodeBin);
         src.link(decodeBin);
 
         /* create audio output */
         final Bin audioBin = new Bin("Audio Bin");
-        
+
         Element conv = ElementFactory.make("audioconvert", "Audio Convert");
         Element sink = ElementFactory.make("autoaudiosink", "sink");
         audioBin.addMany(conv, sink);
-        Element.linkMany(conv, sink);        
+        Element.linkMany(conv, sink);
         audioBin.addPad(new GhostPad("sink", conv.getStaticPad("sink")));
-        
-        pipe.add(audioBin);
+
+        m_pipe.add(audioBin);
 
         decodeBin.connect(new PAD_ADDED() {
             @Override
@@ -73,18 +97,19 @@ public class GStreamerFrame extends javax.swing.JFrame
                 if (pad.isLinked()) {
                     return;
                 }
-  
+
                 /* check media type */
                 Caps caps = pad.getCaps();
                 Structure struct = caps.getStructure(0);
                 if (struct.getName().startsWith("audio/")) {
                     LOG.info("PAD_ADDED().padAdded() Got audio pad");
                     /* link'n'play */
-                    pad.link(audioPad);  
+                    pad.link(audioPad);
                 }
 			}
 		});
-        Bus bus = pipe.getBus();
+
+        Bus bus = m_pipe.getBus();
         bus.connect(new Bus.TAG() {
             @Override
             public void tagsFound(GstObject source, TagList tagList) {
@@ -94,28 +119,30 @@ public class GStreamerFrame extends javax.swing.JFrame
                 }
             }
         });
+
         bus.connect(new Bus.ERROR() {
             @Override
             public void errorMessage(GstObject source, int code, String message) {
                 LOG.info("Bus.ERROR().errorMessage() Error: code=" + code + " message=" + message);
             }
         });
+
         bus.connect(new Bus.EOS() {
             @Override
             public void endOfStream(GstObject source) {
                 LOG.info("Bus.EOS().endOfStream() Got EOS!");
             }
-            
+
         });
 
-        bus.connect(new Bus.ASYNC_DONE()
-        {
-            @Override
-            public void asyncDone (GstObject source)
-            {
-                LOG.info("Bus.ASYNC_DONE().asyncDone() AsyncDone");
-            }
-        });
+        //bus.connect(new Bus.ASYNC_DONE()
+        //{
+        //    @Override
+        //    public void asyncDone (GstObject source)
+        //    {
+        //        LOG.info("Bus.ASYNC_DONE().asyncDone() AsyncDone");
+        //    }
+        //});
 
         bus.connect(new Bus.BUFFERING()
         {
@@ -126,8 +153,21 @@ public class GStreamerFrame extends javax.swing.JFrame
             }
         });
 
-        pipe.play();
-        Gst.main();
+        //m_pipe.play();
+        //Gst.main();
+
+    }
+
+    public void play()
+    {
+        LOG.info("Playing stream");
+        m_pipe.play();
+    }
+
+    public void stop()
+    {
+        LOG.info("Stopping stream");
+        m_pipe.stop();
     }
 
     @Override
@@ -151,7 +191,14 @@ public class GStreamerFrame extends javax.swing.JFrame
     private void initComponents()
     {
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter()
+        {
+            public void windowClosing(java.awt.event.WindowEvent evt)
+            {
+                formWindowClosing(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -166,6 +213,17 @@ public class GStreamerFrame extends javax.swing.JFrame
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt)//GEN-FIRST:event_formWindowClosing
+    {//GEN-HEADEREND:event_formWindowClosing
+        LOG.entering("formWindowClosing");
+
+        stop();
+
+        LOG.finer("Gst quit()/main()");
+        Gst.quit();
+        Gst.main();
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments
