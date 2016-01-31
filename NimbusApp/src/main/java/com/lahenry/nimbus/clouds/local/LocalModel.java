@@ -5,7 +5,7 @@
  */
 package com.lahenry.nimbus.clouds.local;
 
-import com.lahenry.io.InputStreamProgress;
+import com.lahenry.nimbus.io.InputStreamProgress;
 import com.lahenry.nimbus.clouds.interfaces.ICloudModel;
 import com.lahenry.nimbus.clouds.interfaces.ICloudProgress;
 import com.lahenry.nimbus.clouds.interfaces.ICloudTransfer;
@@ -231,15 +231,16 @@ public class LocalModel implements ICloudModel<java.io.File>
         {
             final int BUFFER_SIZE = 256*1024;
             final String name = getName(downloadFile);
-            InputStream is = new BufferedInputStream(
-                    new InputStreamProgress(new FileInputStream(downloadFile)) {
-                        @Override
-                        public void progress (long offset, int bytesRead)
-                        {
-                            LOG.finer("File:'"+name+"' Offset:"+offset+" BytesRead:"+bytesRead);
-                        }
-                    },
-                    BUFFER_SIZE);
+            InputStream fis = new FileInputStream(downloadFile);
+            InputStream isprog = new InputStreamProgress(fis)
+            {
+                @Override
+                public void progress(long offset, int bytesRead)
+                {
+                    LOG.finer("File:'"+name+"' Offset:"+offset+" BytesRead:"+bytesRead);
+                }
+            };
+            InputStream is = new BufferedInputStream(isprog, BUFFER_SIZE);
             return is;
         }
         catch (FileNotFoundException ex)
