@@ -5,26 +5,12 @@
  */
 package com.lahenry.nimbus.gui;
 
+import com.lahenry.nimbus.gstreamer.GStreamerAudio;
 import com.lahenry.nimbus.gui.helpers.BusyTaskCursor;
 import com.lahenry.nimbus.mainapp.AppInfo;
 import com.lahenry.nimbus.utils.Logit;
 import java.awt.Component;
 import java.io.InputStream;
-import org.gstreamer.Bin;
-import org.gstreamer.Bus;
-import org.gstreamer.Caps;
-import org.gstreamer.Element;
-import org.gstreamer.Element.PAD_ADDED;
-import org.gstreamer.ElementFactory;
-import org.gstreamer.GhostPad;
-import org.gstreamer.Gst;
-import org.gstreamer.GstObject;
-import org.gstreamer.Pad;
-import org.gstreamer.Pipeline;
-import org.gstreamer.Structure;
-import org.gstreamer.TagList;
-import org.gstreamer.elements.DecodeBin2;
-import org.gstreamer.io.InputStreamSrc;
 
 /**
  *
@@ -33,9 +19,8 @@ import org.gstreamer.io.InputStreamSrc;
 public class GStreamerFrame extends javax.swing.JFrame
 {
     private static final Logit LOG = Logit.create(GStreamerFrame.class.getName());
-    private static boolean m_has_gst_init = false;
 
-    private Pipeline m_pipe;
+    private GStreamerAudio m_gst;
 
     /**
      * Creates new form GStreamerFrame
@@ -43,17 +28,6 @@ public class GStreamerFrame extends javax.swing.JFrame
     public GStreamerFrame ()
     {
         initComponents();
-
-        if (!m_has_gst_init)
-        {
-            m_has_gst_init = true;
-
-            LOG.info("Initializing GStreamer");
-
-            Gst.init(AppInfo.NAME, new String[]{});
-
-            LOG.info(Gst.getVersionString());
-        }
     }
 
     public static void show(final Component parent, final String title, final InputStream istream)
@@ -81,103 +55,20 @@ public class GStreamerFrame extends javax.swing.JFrame
 
     public void init(final String title, final InputStream istream)
     {
-        m_pipe = new Pipeline("main pipeline");
-
-        Element src = new InputStreamSrc(istream, title);
-        DecodeBin2 decodeBin = (DecodeBin2) ElementFactory.make("decodebin2", "Decode Bin");
-        m_pipe.addMany(src, decodeBin);
-        src.link(decodeBin);
-
-        /* create audio output */
-        final Bin audioBin = new Bin("Audio Bin");
-
-        Element conv = ElementFactory.make("audioconvert", "Audio Convert");
-        Element sink = ElementFactory.make("autoaudiosink", "sink");
-        audioBin.addMany(conv, sink);
-        Element.linkMany(conv, sink);
-        audioBin.addPad(new GhostPad("sink", conv.getStaticPad("sink")));
-
-        m_pipe.add(audioBin);
-
-        decodeBin.connect(new PAD_ADDED() {
-            @Override
-			public void padAdded(Element element, Pad pad) {
-                /* only link once */
-                Pad audioPad = audioBin.getStaticPad("sink");
-                if (pad.isLinked()) {
-                    return;
-                }
-
-                /* check media type */
-                Caps caps = pad.getCaps();
-                Structure struct = caps.getStructure(0);
-                if (struct.getName().startsWith("audio/")) {
-                    LOG.info("PAD_ADDED().padAdded() Got audio pad");
-                    /* link'n'play */
-                    pad.link(audioPad);
-                }
-			}
-		});
-
-        Bus bus = m_pipe.getBus();
-        bus.connect(new Bus.TAG() {
-            @Override
-            public void tagsFound(GstObject source, TagList tagList) {
-                //LOG.info("Bus.TAG().tagsFound() Got TAG event");
-                for (String tag : tagList.getTagNames()) {
-                    LOG.info("Bus.TAG().tagsFound() Tag " + tag + " = " + tagList.getValue(tag, 0));
-                }
-            }
-        });
-
-        bus.connect(new Bus.ERROR() {
-            @Override
-            public void errorMessage(GstObject source, int code, String message) {
-                LOG.info("Bus.ERROR().errorMessage() Error: code=" + code + " message=" + message);
-            }
-        });
-
-        bus.connect(new Bus.EOS() {
-            @Override
-            public void endOfStream(GstObject source) {
-                LOG.info("Bus.EOS().endOfStream() Got EOS!");
-            }
-
-        });
-
-        //bus.connect(new Bus.ASYNC_DONE()
-        //{
-        //    @Override
-        //    public void asyncDone (GstObject source)
-        //    {
-        //        LOG.info("Bus.ASYNC_DONE().asyncDone() AsyncDone");
-        //    }
-        //});
-
-        bus.connect(new Bus.BUFFERING()
-        {
-            @Override
-            public void bufferingData (GstObject source, int percent)
-            {
-                LOG.info("Bus.BUFFERING().bufferingData() percent:"+percent);
-            }
-        });
-
-        //m_pipe.play();
-        //Gst.main();
-
+        m_gst = new GStreamerAudio(title, istream);
+        m_gst.init();
     }
 
     public void play()
     {
         LOG.info("Playing stream");
-        m_pipe.play();
+        m_gst.play();
     }
 
     public void stop()
     {
         LOG.info("Stopping stream");
-        m_pipe.stop();
+        m_gst.stop();
     }
 
     @Override
@@ -228,11 +119,7 @@ public class GStreamerFrame extends javax.swing.JFrame
     {//GEN-HEADEREND:event_formWindowClosing
         LOG.entering("formWindowClosing");
 
-        stop();
-
-        LOG.finer("Gst quit()/main()");
-        Gst.quit();
-        Gst.main();
+        m_gst.close();
     }//GEN-LAST:event_formWindowClosing
 
     /**
