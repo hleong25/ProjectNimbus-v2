@@ -33,6 +33,7 @@ import org.gstreamer.io.InputStreamSrc;
 public class GStreamerFrame extends javax.swing.JFrame
 {
     private static final Logit LOG = Logit.create(GStreamerFrame.class.getName());
+    private static boolean m_has_gst_init = false;
 
     private Pipeline m_pipe;
 
@@ -43,7 +44,16 @@ public class GStreamerFrame extends javax.swing.JFrame
     {
         initComponents();
 
-        Gst.init(AppInfo.NAME, new String[]{});
+        if (!m_has_gst_init)
+        {
+            m_has_gst_init = true;
+
+            LOG.info("Initializing GStreamer");
+
+            Gst.init(AppInfo.NAME, new String[]{});
+
+            LOG.info(Gst.getVersionString());
+        }
     }
 
     public static void show(final Component parent, final String title, final InputStream istream)
@@ -113,7 +123,7 @@ public class GStreamerFrame extends javax.swing.JFrame
         bus.connect(new Bus.TAG() {
             @Override
             public void tagsFound(GstObject source, TagList tagList) {
-                LOG.info("Bus.TAG().tagsFound() Got TAG event");
+                //LOG.info("Bus.TAG().tagsFound() Got TAG event");
                 for (String tag : tagList.getTagNames()) {
                     LOG.info("Bus.TAG().tagsFound() Tag " + tag + " = " + tagList.getValue(tag, 0));
                 }

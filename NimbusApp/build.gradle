@@ -5,7 +5,7 @@ plugins {
 apply plugin: 'java'
 apply plugin: 'application'
 
-version = "1.0.0"
+version = "0.0.2-alpha"
 
 sourceCompatibility = '1.7'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
@@ -32,11 +32,15 @@ dependencies {
 
     compile fileTree(dir: 'lib', include: '*.jar')
 
+    // cloud sdk
     compile 'com.google.apis:google-api-services-drive:v2-rev200-1.21.0'
     compile 'com.dropbox.core:dropbox-core-sdk:1.8.2'
     compile 'com.box:box-java-sdk:2.0.0'
 
-    compile 'com.googlecode.gstreamer-java:gstreamer-java:1.5'
+    // for gstreamer-java-1.6-SNAPSHOT
+    compile 'net.java.dev.jna:jna:4.2.1'
+    compile 'net.java.dev.jna:jna-platform:4.2.1'
+    compile 'com.apple:AppleJavaExtensions:1.4'
 
 }
 
@@ -53,3 +57,11 @@ macAppBundle {
 
     dmgName "${project.name}-${project.version}-osx"
 }
+
+//distTar {
+//    exclude '**/*sources*.jar'
+//}
+//
+//distZip {
+//    exclude '**/*sources*.jar'
+//}
