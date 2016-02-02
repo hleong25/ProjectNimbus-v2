@@ -6,6 +6,8 @@
 package com.lahenry.nimbus.gui;
 
 import com.lahenry.nimbus.gstreamer.GStreamerAudio;
+import com.lahenry.nimbus.gstreamer.GStreamerMedia;
+import com.lahenry.nimbus.gstreamer.GStreamerVideo;
 import com.lahenry.nimbus.gui.helpers.BusyTaskCursor;
 import com.lahenry.nimbus.mainapp.AppInfo;
 import com.lahenry.nimbus.utils.Logit;
@@ -20,7 +22,7 @@ public class GStreamerFrame extends javax.swing.JFrame
 {
     private static final Logit LOG = Logit.create(GStreamerFrame.class.getName());
 
-    private GStreamerAudio m_gst;
+    private GStreamerMedia m_gst;
 
     /**
      * Creates new form GStreamerFrame
@@ -39,15 +41,29 @@ public class GStreamerFrame extends javax.swing.JFrame
             @Override
             public void run()
             {
-                GStreamerFrame frame = new GStreamerFrame();
+                GStreamerFrame frame = null;
 
-                frame.setTitle(title);
+                try
+                {
+                    frame = new GStreamerFrame();
 
-                frame.init(title, istream);
+                    frame.setTitle(title);
 
-                frame.setVisible(true);
+                    frame.init(title, istream);
 
-                frame.play();
+                    frame.setVisible(true);
+
+                    //frame.play();
+                }
+                catch (Exception ex)
+                {
+                    LOG.throwing("show", ex);
+
+                    if (frame != null)
+                    {
+                        frame.dispose();
+                    }
+                }
             }
         });
 
@@ -55,7 +71,8 @@ public class GStreamerFrame extends javax.swing.JFrame
 
     public void init(final String title, final InputStream istream)
     {
-        m_gst = new GStreamerAudio(title, istream);
+        //m_gst = new GStreamerAudio(title, istream);
+        m_gst = new GStreamerVideo(title, istream);
         m_gst.init();
     }
 

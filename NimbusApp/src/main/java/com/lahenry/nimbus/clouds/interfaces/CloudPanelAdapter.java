@@ -108,7 +108,8 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
         }
         else if (m_controller.isTypeVideo(item))
         {
-            JOptionPane.showMessageDialog(this, "TODO: open a video file");
+            //JOptionPane.showMessageDialog(this, "TODO: open a video file");
+            GStreamerFrame.show(this, name, istream);
         }
         else
         {
