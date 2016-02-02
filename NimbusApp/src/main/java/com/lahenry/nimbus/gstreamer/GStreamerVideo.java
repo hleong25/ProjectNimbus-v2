@@ -7,13 +7,11 @@ package com.lahenry.nimbus.gstreamer;
 
 import com.lahenry.nimbus.utils.Logit;
 import java.io.InputStream;
-import org.gstreamer.Bin;
 import org.gstreamer.Bus;
 import org.gstreamer.Caps;
 import org.gstreamer.Element;
 import org.gstreamer.Element.PAD_ADDED;
 import org.gstreamer.ElementFactory;
-import org.gstreamer.GhostPad;
 import org.gstreamer.GstObject;
 import org.gstreamer.Pad;
 import org.gstreamer.Structure;
@@ -29,94 +27,81 @@ public class GStreamerVideo extends GStreamerMedia
 {
     private static final Logit LOG = Logit.create(GStreamerVideo.class.getName());
 
+    protected final Element m_istreamsrc;
+    protected final VideoComponent m_videocomponent;
+
     public GStreamerVideo(String name, InputStream istream)
     {
         super(name, istream);
 
+       // from gstreamer-java/src/org/gstreamer/example/DecodeBinPlayer.java
+
         LOG.entering("<init>", new Object[]{name, istream});
+
+        m_istreamsrc = new InputStreamSrc(m_istream, m_name);
+        m_videocomponent = new VideoComponent();
     }
 
     @Override
     public boolean init()
     {
-        javax.swing.SwingUtilities.invokeLater(new Runnable()
-        {
-            public void run()
-            {
-                LOG.entering("run");
+        DecodeBin2 decodeBin = (DecodeBin2) ElementFactory.make("decodebin2", "decodebin2:"+m_name+"/"+m_istream.toString());
+        Element decodeQueue = ElementFactory.make("queue", "Decode Queue:"+m_name+"/"+m_istream.toString());
+        m_pipe.addMany(m_istreamsrc, decodeQueue, decodeBin);
+        Element.linkMany(m_istreamsrc, decodeQueue, decodeBin);
 
-                final Element src = new InputStreamSrc(m_istream, m_name);
-                final DecodeBin2 decodeBin = (DecodeBin2) ElementFactory.make("decodebin2", "Decode Bin");
+        decodeBin.connect(new PAD_ADDED() {
+            public void padAdded(Element element, Pad pad) {
+                /* only link once */
+                if (pad.isLinked()) {
+                    return;
+                }
+                /* check media type */
+                Caps caps = pad.getCaps();
+                Structure struct = caps.getStructure(0);
+                if (struct.getName().startsWith("audio/")) {
+                    LOG.fine("Linking audio pad: " + struct.getName());
+                    //pad.link(audioBin.getStaticPad("sink"));
+                } else if (struct.getName().startsWith("video/")) {
+                    LOG.fine("Linking video pad: " + struct.getName());
+                    pad.link(m_videocomponent.getElement().getStaticPad("sink"));
 
-                Element decodeQueue = ElementFactory.make("queue", "Decode Queue");
-                m_pipe.addMany(src, decodeQueue, decodeBin);
-                Element.linkMany(src, decodeQueue, decodeBin);
-
-                final VideoComponent videoComponent = new VideoComponent();
-
-                decodeBin.connect(new PAD_ADDED() {
-                    public void padAdded(Element element, Pad pad) {
-                        /* only link once */
-                        if (pad.isLinked()) {
-                            return;
-                        }
-                        /* check media type */
-                        Caps caps = pad.getCaps();
-                        Structure struct = caps.getStructure(0);
-                        if (struct.getName().startsWith("audio/")) {
-                            LOG.fine("Linking audio pad: " + struct.getName());
-                            //pad.link(audioBin.getStaticPad("sink"));
-                        } else if (struct.getName().startsWith("video/")) {
-                            LOG.fine("Linking video pad: " + struct.getName());
-                            pad.link(videoComponent.getElement().getStaticPad("sink"));
-
-                            // Make the video frame visible
-                            //SwingUtilities.invokeLater(new Runnable() {
-                            //    public void run() {
-                            //        frame.setVisible(true);
-                            //    }
-                            //});
-                        } else {
-                            LOG.fine("Unknown pad [" + struct.getName() + "]");
-                        }
-                    }
-                });
-                Bus bus = m_pipe.getBus();
-
-                bus.connect(new Bus.ERROR() {
-                    public void errorMessage(GstObject source, int code, String message) {
-                        LOG.fine("Error: code=" + code + " message=" + message);
-                    }
-                });
-                bus.connect(new Bus.EOS() {
-
-                    public void endOfStream(GstObject source) {
-                        m_pipe.stop();
-                        //System.exit(0);
-                    }
-
-                });
-
-                //Element videosink = videoComponent.getElement();
-                //m_pipe.addMany(videosink);
-                //decodeBin.link(videosink);
-                //Element.linkMany(videosink);
-
-                // Now create a JFrame to display the video output
-                javax.swing.JFrame frame = new javax.swing.JFrame("Swing Video Test");
-                frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
-                frame.add(videoComponent, java.awt.BorderLayout.CENTER);
-                videoComponent.setPreferredSize(new java.awt.Dimension(720, 480));
-                frame.pack();
-                frame.setVisible(true);
-
-                // Start the pipeline processing
-                m_pipe.add(videoComponent.getElement());
-                m_pipe.play();
+                    // Make the video frame visible
+                    //SwingUtilities.invokeLater(new Runnable() {
+                    //    public void run() {
+                    //        frame.setVisible(true);
+                    //    }
+                    //});
+                } else {
+                    LOG.fine("Unknown pad [" + struct.getName() + "]");
+                }
             }
         });
 
+        Bus bus = m_pipe.getBus();
+
+        bus.connect(new Bus.ERROR() {
+            @Override
+            public void errorMessage(GstObject source, int code, String message) {
+                LOG.fine("Error: code=" + code + " message=" + message);
+            }
+        });
+
+        bus.connect(new Bus.EOS() {
+            @Override
+            public void endOfStream(GstObject source) {
+                m_pipe.stop();
+            }
+        });
+
+        m_pipe.add(m_videocomponent.getElement());
+
         return true;
+    }
+
+    public VideoComponent getVideoComponent()
+    {
+        return m_videocomponent;
     }
 
 }

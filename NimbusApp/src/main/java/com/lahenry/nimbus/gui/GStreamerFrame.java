@@ -13,6 +13,7 @@ import com.lahenry.nimbus.mainapp.AppInfo;
 import com.lahenry.nimbus.utils.Logit;
 import java.awt.Component;
 import java.io.InputStream;
+import org.gstreamer.swing.VideoComponent;
 
 /**
  *
@@ -30,34 +31,63 @@ public class GStreamerFrame extends javax.swing.JFrame
     public GStreamerFrame ()
     {
         initComponents();
+
+        // disable buttons for now
+        btnRewind.setVisible(false);
+        btnStop.setVisible(false);
+        btnForward.setVisible(false);
     }
 
-    public static void show(final Component parent, final String title, final InputStream istream)
+    public static void showVideo(final Component parent, final String title, final InputStream istream)
     {
-        LOG.entering("show", new Object[]{istream});
+        LOG.entering("showVideo", new Object[]{istream});
+
+        LOG.fine("Creating new GStreamerFrame");
+        final GStreamerFrame frame = new GStreamerFrame();
+        frame.setTitle(title);
+
+        LOG.fine("Creating new GStreamerVideo");
+        frame.m_gst = new GStreamerVideo(title, istream);
+
+        frame.setupVideo();
+
+        showAndPlay(parent, frame);
+    }
+
+    public static void showAudio(final Component parent, final String title, final InputStream istream)
+    {
+        LOG.entering("showAudio", new Object[]{istream});
+
+        LOG.fine("Creating new GStreamerFrame");
+        final GStreamerFrame frame = new GStreamerFrame();
+        frame.setTitle(title);
+
+        LOG.fine("Creating new GStreamerAudio");
+        frame.m_gst = new GStreamerAudio(title, istream);
+
+        showAndPlay(parent, frame);
+    }
+    
+    protected static void showAndPlay(final Component parent, final GStreamerFrame frame)
+    {
+        LOG.entering("showAndPlay", new Object[]{parent, frame});
 
         BusyTaskCursor.doTask(parent, new BusyTaskCursor.IBusyTask()
         {
             @Override
             public void run()
             {
-                GStreamerFrame frame = null;
-
                 try
                 {
-                    frame = new GStreamerFrame();
-
-                    frame.setTitle(title);
-
-                    frame.init(title, istream);
+                    frame.m_gst.init();
 
                     frame.setVisible(true);
 
-                    //frame.play();
+                    frame.mediaAction(GStreamerMedia.ACTION.PLAY);
                 }
                 catch (Exception ex)
                 {
-                    LOG.throwing("show", ex);
+                    LOG.throwing("showAndPlay", ex);
 
                     if (frame != null)
                     {
@@ -66,26 +96,17 @@ public class GStreamerFrame extends javax.swing.JFrame
                 }
             }
         });
-
     }
 
-    public void init(final String title, final InputStream istream)
+    protected void setupVideo()
     {
-        //m_gst = new GStreamerAudio(title, istream);
-        m_gst = new GStreamerVideo(title, istream);
-        m_gst.init();
-    }
+        LOG.entering("setupVideo");
 
-    public void play()
-    {
-        LOG.info("Playing stream");
-        m_gst.play();
-    }
+        VideoComponent videocomponent = ((GStreamerVideo)m_gst).getVideoComponent();
+        add(videocomponent, java.awt.BorderLayout.CENTER);
+        videocomponent.setPreferredSize(new java.awt.Dimension(720, 480));
 
-    public void stop()
-    {
-        LOG.info("Stopping stream");
-        m_gst.stop();
+        pack();
     }
 
     @Override
@@ -99,6 +120,36 @@ public class GStreamerFrame extends javax.swing.JFrame
             super.setTitle(title + APP_NAME);
     }
 
+    public void mediaAction(GStreamerMedia.ACTION action)
+    {
+        LOG.entering("mediaAction", new Object[]{action});
+
+        switch (action)
+        {
+            case PAUSE:
+                btnPause.setVisible(false);
+                btnPlay.setVisible(true);
+                m_gst.pause();
+                break;
+
+            case PLAY:
+                btnPause.setVisible(true);
+                btnPlay.setVisible(false);
+                m_gst.play();
+                break;
+
+            case STOP:
+                btnPause.setVisible(false);
+                btnPlay.setVisible(true);
+                m_gst.stop();
+                break;
+
+            default:
+                LOG.fine("Action:"+action+" not implemented");
+                break;
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -109,6 +160,13 @@ public class GStreamerFrame extends javax.swing.JFrame
     private void initComponents()
     {
 
+        jPanel1 = new javax.swing.JPanel();
+        btnRewind = new javax.swing.JButton();
+        btnPause = new javax.swing.JButton();
+        btnPlay = new javax.swing.JButton();
+        btnStop = new javax.swing.JButton();
+        btnForward = new javax.swing.JButton();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter()
         {
@@ -118,16 +176,43 @@ public class GStreamerFrame extends javax.swing.JFrame
             }
         });
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-        );
+        btnRewind.setText(GStreamerMedia.ICON_REWIND);
+        jPanel1.add(btnRewind);
+
+        btnPause.setText(GStreamerMedia.ICON_PAUSE);
+        btnPause.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                btnPauseActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnPause);
+
+        btnPlay.setText(GStreamerMedia.ICON_PLAY);
+        btnPlay.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                btnPlayActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnPlay);
+
+        btnStop.setText(GStreamerMedia.ICON_STOP);
+        btnStop.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                btnStopActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnStop);
+
+        btnForward.setText(GStreamerMedia.ICON_FORWARD);
+        jPanel1.add(btnForward);
+
+        getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_END);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -138,6 +223,21 @@ public class GStreamerFrame extends javax.swing.JFrame
 
         m_gst.close();
     }//GEN-LAST:event_formWindowClosing
+
+    private void btnPauseActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnPauseActionPerformed
+    {//GEN-HEADEREND:event_btnPauseActionPerformed
+        mediaAction(GStreamerMedia.ACTION.PAUSE);
+    }//GEN-LAST:event_btnPauseActionPerformed
+
+    private void btnPlayActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnPlayActionPerformed
+    {//GEN-HEADEREND:event_btnPlayActionPerformed
+        mediaAction(GStreamerMedia.ACTION.PLAY);
+    }//GEN-LAST:event_btnPlayActionPerformed
+
+    private void btnStopActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnStopActionPerformed
+    {//GEN-HEADEREND:event_btnStopActionPerformed
+        mediaAction(GStreamerMedia.ACTION.STOP);
+    }//GEN-LAST:event_btnStopActionPerformed
 
     /**
      * @param args the command line arguments
@@ -189,5 +289,11 @@ public class GStreamerFrame extends javax.swing.JFrame
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnForward;
+    private javax.swing.JButton btnPause;
+    private javax.swing.JButton btnPlay;
+    private javax.swing.JButton btnRewind;
+    private javax.swing.JButton btnStop;
+    private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
 }

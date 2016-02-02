@@ -21,6 +21,21 @@ public abstract class GStreamerMedia
     private static final Logit LOG = Logit.create(GStreamerMedia.class.getName());
     private static int m_gst_init_count = 0;
 
+    public enum ACTION
+    {
+        REWIND,
+        PAUSE,
+        PLAY,
+        STOP,
+        FORWARD,
+    };
+
+    public static final String ICON_REWIND = "<html><center>Rewind Step</center></html>";
+    public static final String ICON_PLAY = "<html><center>Play</center></html>";
+    public static final String ICON_PAUSE = "<html><center>Pause</center></html>";
+    public static final String ICON_STOP = "<html><center>Stop</center></html>";
+    public static final String ICON_FORWARD = "<html><center>Forward Step</center></html>";
+
     protected final String m_name;
     protected final InputStream m_istream;
     protected final Pipeline m_pipe;
@@ -78,11 +93,17 @@ public abstract class GStreamerMedia
 
     public abstract boolean init();
 
+    public boolean pause()
+    {
+        LOG.entering("pause");
+
+        StateChangeReturn state = m_pipe.pause();
+        return state != StateChangeReturn.FAILURE;
+    }
+
     public boolean play()
     {
         LOG.entering("play");
-
-        //assert(m_pipe != null);
 
         StateChangeReturn state = m_pipe.play();
         return state != StateChangeReturn.FAILURE;
