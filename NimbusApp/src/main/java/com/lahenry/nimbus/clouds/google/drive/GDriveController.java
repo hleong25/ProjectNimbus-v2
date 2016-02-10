@@ -8,7 +8,7 @@ package com.lahenry.nimbus.clouds.google.drive;
 import com.google.api.services.drive.model.File;
 import com.lahenry.nimbus.clouds.CloudType;
 import com.lahenry.nimbus.clouds.interfaces.CloudControllerAdapter;
-import com.lahenry.nimbus.utils.FileUtils;
+import com.lahenry.nimbus.defines.FileType;
 import com.lahenry.nimbus.utils.Logit;
 
 // TODO: this class has an unchecked or unsafe operation
@@ -64,23 +64,21 @@ public class GDriveController
     }
 
     @Override
-    public boolean isTypeImage (File item)
+    public FileType getFileType(File item)
     {
-        return item.getMimeType().equals(GDriveConstants.MIME_TYPE_PHOTO) ||
-               FileUtils.isImage(item.getTitle());
+        String mimetype = item.getMimeType();
+
+        switch (mimetype)
+        {
+            case GDriveConstants.MIME_TYPE_PHOTO:
+                return FileType.IMAGE;
+            case GDriveConstants.MIME_TYPE_AUDIO:
+                return FileType.AUDIO;
+            case GDriveConstants.MIME_TYPE_VIDEO:
+                return FileType.VIDEO;
+            default:
+                return super.getFileType(item);
+        }
     }
 
-    @Override
-    public boolean isTypeAudio (File item)
-    {
-        return item.getMimeType().equals(GDriveConstants.MIME_TYPE_AUDIO) ||
-               FileUtils.isAudio(item.getTitle());
-    }
-
-    @Override
-    public boolean isTypeVideo (File item)
-    {
-        return item.getMimeType().equals(GDriveConstants.MIME_TYPE_VIDEO) ||
-               FileUtils.isVideo(item.getTitle());
-    }
 }

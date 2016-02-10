@@ -5,9 +5,11 @@
  */
 package com.lahenry.nimbus.gstreamer;
 
+import com.lahenry.nimbus.clouds.interfaces.ICloudController;
 import com.lahenry.nimbus.mainapp.AppInfo;
 import com.lahenry.nimbus.utils.Logit;
-import java.io.InputStream;
+import org.gstreamer.Element;
+import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
 import org.gstreamer.Pipeline;
 import org.gstreamer.StateChangeReturn;
@@ -15,8 +17,10 @@ import org.gstreamer.StateChangeReturn;
 /**
  *
  * @author henry
+ * @param <T> - Main data type for the cloud
+ * @param <CC> - ICloudController
  */
-public abstract class GStreamerMedia
+public abstract class GStreamerMedia<T, CC extends ICloudController<T>>
 {
     private static final Logit LOG = Logit.create(GStreamerMedia.class.getName());
     private static int m_gst_init_count = 0;
@@ -36,13 +40,15 @@ public abstract class GStreamerMedia
     public static final String ICON_STOP = "<html><center>Stop</center></html>";
     public static final String ICON_FORWARD = "<html><center>Forward Step</center></html>";
 
+    protected final String m_id;
     protected final String m_name;
-    protected final InputStream m_istream;
+    protected final CC m_controller;
+    protected final T m_file;
     protected final Pipeline m_pipe;
 
-    public GStreamerMedia(String name, InputStream istream)
+    public GStreamerMedia(String name, CC controller, T file)
     {
-        LOG.entering("<init>", new Object[]{name, istream});
+        LOG.entering("<init>", new Object[]{name, controller, file});
 
         if (m_gst_init_count++ <= 0)
         {
@@ -56,9 +62,12 @@ public abstract class GStreamerMedia
         }
 
         m_name = name;
-        m_istream = istream;
-        m_pipe = new Pipeline("Pipeline:"+m_name+"/"+istream.toString());
+        m_controller = controller;
+        m_file = file;
 
+        m_id = m_controller+"/"+m_controller.getItemName(m_file);
+
+        m_pipe = new Pipeline("Pipeline:"+m_id);
     }
 
     @Override
@@ -92,6 +101,17 @@ public abstract class GStreamerMedia
     }
 
     public abstract boolean init();
+
+    protected Element createElement(String factoryName)
+    {
+        return createElement(factoryName, factoryName);
+    }
+
+    protected Element createElement(String factoryName, String name)
+    {
+        Element element = ElementFactory.make(factoryName, name+":"+m_id);
+        return element;
+    }
 
     public boolean pause()
     {

@@ -6,6 +6,7 @@
 package com.lahenry.nimbus.clouds.interfaces;
 
 import com.lahenry.nimbus.clouds.CloudType;
+import com.lahenry.nimbus.defines.FileType;
 import java.awt.Component;
 import java.io.InputStream;
 import java.util.List;
@@ -32,7 +33,6 @@ public interface ICloudController<T>
 
     String getItemName(T item);
 
-    boolean isTypeImage(T item);
-    boolean isTypeAudio(T item);
-    boolean isTypeVideo(T item);
+    FileType getFileType(T item);
+    long getFileSize(T item);
 }

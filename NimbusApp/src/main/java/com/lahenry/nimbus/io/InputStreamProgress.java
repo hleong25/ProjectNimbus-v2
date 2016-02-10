@@ -24,10 +24,12 @@ public abstract class InputStreamProgress extends InputStream
     }
 
     public abstract void progress(long offset, int bytesRead);
+    public abstract void trace(String msg);
 
     @Override
     public int read () throws IOException
     {
+        trace("read()");
         int nextByte = m_istream.read();
         int bytesRead = 1;
         progress(m_offset, bytesRead);
@@ -38,6 +40,7 @@ public abstract class InputStreamProgress extends InputStream
     @Override
     public int read (byte[] b) throws IOException
     {
+        trace("read(b[len="+b.length+"])");
         int bytesRead = m_istream.read(b);
         progress(m_offset, bytesRead);
         m_offset += bytesRead;
@@ -47,15 +50,19 @@ public abstract class InputStreamProgress extends InputStream
     @Override
     public int read (byte[] b, int off, int len) throws IOException
     {
+        trace("read(b[size="+b.length+",off="+off+",len="+len+"]) curroffset="+m_offset);
         int bytesRead = m_istream.read(b, off, len);
         progress(m_offset, bytesRead);
         m_offset += bytesRead;
+        //trace("read(b[len="+b.length+",off="+off+",len="+len+"])="+bytesRead);
+        //trace("read()="+Arrays.toString(Arrays.copyOfRange(b, 0, 100)));
         return bytesRead;
     }
 
     @Override
     public long skip(long n) throws IOException
     {
+        trace("skip(n="+n+"])");
         long bytesSkip = m_istream.skip(n);
         m_offset += bytesSkip;
         return bytesSkip;
@@ -64,6 +71,7 @@ public abstract class InputStreamProgress extends InputStream
     @Override
     public synchronized void reset () throws IOException
     {
+        trace("reset()");
         m_istream.reset();
         m_offset = 0;
     }
@@ -71,12 +79,14 @@ public abstract class InputStreamProgress extends InputStream
     @Override
     public int available () throws IOException
     {
+        trace("available()");
         return m_istream.available();
     }
 
     @Override
     public void close () throws IOException
     {
+        trace("close()");
         m_istream.close();
     }
 

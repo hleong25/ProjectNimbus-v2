@@ -8,7 +8,6 @@ package com.lahenry.nimbus.clouds.dropbox;
 import com.dropbox.core.DbxEntry;
 import com.lahenry.nimbus.clouds.CloudType;
 import com.lahenry.nimbus.clouds.interfaces.CloudControllerAdapter;
-import com.lahenry.nimbus.utils.FileUtils;
 import com.lahenry.nimbus.utils.Logit;
 import com.lahenry.nimbus.utils.Tools;
 
@@ -73,21 +72,9 @@ public class DropboxController
     }
 
     @Override
-    public boolean isTypeImage (DbxEntry item)
+    public long getFileSize(DbxEntry item)
     {
-        return FileUtils.isImage(item.name);
-    }
-
-    @Override
-    public boolean isTypeAudio (DbxEntry item)
-    {
-        return FileUtils.isAudio(item.name);
-    }
-
-    @Override
-    public boolean isTypeVideo (DbxEntry item)
-    {
-        return FileUtils.isVideo(item.name);
+        return 0;
     }
 
 }

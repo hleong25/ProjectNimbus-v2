@@ -5,6 +5,7 @@
  */
 package com.lahenry.nimbus.clouds.interfaces;
 
+import com.lahenry.nimbus.defines.FileType;
 import com.lahenry.nimbus.gui.GStreamerFrame;
 import com.lahenry.nimbus.gui.ImageViewerFrame;
 import com.lahenry.nimbus.gui.components.FileItemPanel;
@@ -94,26 +95,39 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
     {
         LOG.entering("responsiveOpenFile", new Object[]{getAbsolutePath(item)});
 
-        InputStream istream = m_controller.getDownloadStream(item);
         String name = m_controller.getItemName(item);
+        FileType filetype = m_controller.getFileType(item);
 
-        if (m_controller.isTypeImage(item))
+        switch (filetype)
         {
-            ImageViewerFrame.show(this, name, istream);
+            case IMAGE:
+            {
+                InputStream istream = m_controller.getDownloadStream(item);
+                ImageViewerFrame.show(this, name, istream);
+            }
+            break;
+
+            case AUDIO:
+            {
+                //GStreamerFrame.showAudio(this, name, m_controller, item);
+                //GStreamerFrame.showAudio(this, name, istream);
+            }
+            break;
+
+            case VIDEO:
+            {
+                GStreamerFrame.showVideo(this, name, m_controller, item);
+            }
+            break;
+
+            default:
+            {
+                String msg = "Cannot open '"+name+"' as type "+FileUtils.getMimeType(name);
+                JOptionPane.showMessageDialog(this, msg, "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
         }
-        else if (m_controller.isTypeAudio(item))
-        {
-            GStreamerFrame.showAudio(this, name, istream);
-        }
-        else if (m_controller.isTypeVideo(item))
-        {
-            GStreamerFrame.showVideo(this, name, istream);
-        }
-        else
-        {
-            String msg = "Cannot open '"+name+"' as type "+FileUtils.getMimeType(name);
-            JOptionPane.showMessageDialog(this, msg, "Error", JOptionPane.ERROR_MESSAGE);
-        }
+
     }
 
     @Override

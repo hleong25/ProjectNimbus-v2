@@ -7,7 +7,6 @@ package com.lahenry.nimbus.clouds.local;
 
 import com.lahenry.nimbus.clouds.CloudType;
 import com.lahenry.nimbus.clouds.interfaces.CloudControllerAdapter;
-import com.lahenry.nimbus.utils.FileUtils;
 import com.lahenry.nimbus.utils.Logit;
 import java.io.File;
 
@@ -47,21 +46,4 @@ public class LocalController
         return item.getName();
     }
 
-    @Override
-    public boolean isTypeImage (File item)
-    {
-        return FileUtils.isImage(item.getName());
-    }
-
-    @Override
-    public boolean isTypeAudio (File item)
-    {
-        return FileUtils.isAudio(item.getName());
-    }
-
-    @Override
-    public boolean isTypeVideo (File item)
-    {
-        return FileUtils.isVideo(item.getName());
-    }
 }

@@ -34,6 +34,7 @@ public interface ICloudModel<T>
     boolean isFolder(T item);
     String getName(T item);
     String getAbsolutePath(T item);
+    long getFileSize(T item);
 
     // target must be of type T
     void transfer(final ICloudTransfer</*source*/?, /*target*/T> transfer);

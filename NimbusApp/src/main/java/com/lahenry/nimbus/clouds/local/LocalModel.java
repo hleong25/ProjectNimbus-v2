@@ -239,6 +239,12 @@ public class LocalModel implements ICloudModel<java.io.File>
                 {
                     LOG.finer("File:'"+name+"' Offset:"+offset+" BytesRead:"+bytesRead);
                 }
+
+                @Override
+                public void trace(String msg)
+                {
+                    LOG.finer("[trace] "+msg);
+                }
             };
             InputStream is = new BufferedInputStream(isprog, BUFFER_SIZE);
             return is;
@@ -249,5 +255,11 @@ public class LocalModel implements ICloudModel<java.io.File>
         }
 
         return null;
+    }
+
+    @Override
+    public long getFileSize(File item)
+    {
+        return item.length();
     }
 }

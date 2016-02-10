@@ -19,7 +19,6 @@ import org.gstreamer.Pad;
 import org.gstreamer.Structure;
 import org.gstreamer.TagList;
 import org.gstreamer.elements.DecodeBin2;
-import org.gstreamer.io.InputStreamSrc;
 
 /**
  *
@@ -31,7 +30,7 @@ public class GStreamerAudio extends GStreamerMedia
 
     public GStreamerAudio(String name, InputStream istream)
     {
-        super(name, istream);
+        super(name, null, null);
 
         LOG.entering("<init>", new Object[]{name, istream});
     }
@@ -39,7 +38,7 @@ public class GStreamerAudio extends GStreamerMedia
     @Override
     public boolean init()
     {
-        Element src = new InputStreamSrc(m_istream, m_name);
+        Element src = null ;//new InputStreamSrc(m_istream, m_name);
         DecodeBin2 decodeBin = (DecodeBin2) ElementFactory.make("decodebin2", "Decode Bin");
 
         m_pipe.addMany(src, decodeBin);

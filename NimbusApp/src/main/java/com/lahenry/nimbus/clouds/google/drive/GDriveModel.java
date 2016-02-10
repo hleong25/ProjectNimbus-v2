@@ -30,6 +30,7 @@ import com.lahenry.nimbus.clouds.CloudType;
 import com.lahenry.nimbus.clouds.interfaces.ICloudModel;
 import com.lahenry.nimbus.clouds.interfaces.ICloudProgress;
 import com.lahenry.nimbus.clouds.interfaces.ICloudTransfer;
+import com.lahenry.nimbus.io.InputStreamProgress;
 import com.lahenry.nimbus.mainapp.AppInfo;
 import com.lahenry.nimbus.utils.GlobalCache;
 import com.lahenry.nimbus.utils.GlobalCacheKey;
@@ -462,9 +463,25 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
 
             //LOG.fine("ChunkSize: " + request.getMediaHttpDownloader().getChunkSize());
 
-            InputStream is = request.executeMediaAsInputStream();
+            final String name = getName(downloadFile);
 
-            return is;
+            InputStream is = request.executeMediaAsInputStream();
+            InputStream isprog = new InputStreamProgress(is)
+            {
+                @Override
+                public void progress(long offset, int bytesRead)
+                {
+                    LOG.finer("File:'"+name+"' Offset:"+offset+" BytesRead:"+bytesRead);
+                }
+
+                @Override
+                public void trace(String msg)
+                {
+                    LOG.finer("[trace] "+msg);
+                }
+            };
+
+            return isprog;
         }
         catch (IOException ex)
         {
@@ -472,5 +489,11 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         }
 
         return null;
+    }
+
+    @Override
+    public long getFileSize(File item)
+    {
+        return item.getFileSize();
     }
 }

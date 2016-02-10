@@ -6,6 +6,8 @@
 package com.lahenry.nimbus.clouds.interfaces;
 
 import com.lahenry.nimbus.accountmanager.AccountInfo;
+import com.lahenry.nimbus.defines.FileType;
+import com.lahenry.nimbus.utils.FileUtils;
 import com.lahenry.nimbus.utils.GlobalCache;
 import com.lahenry.nimbus.utils.Logit;
 import com.lahenry.nimbus.utils.Tools;
@@ -227,6 +229,38 @@ public abstract class CloudControllerAdapter<T>
     public InputStream getDownloadStream(T downloadFile)
     {
         return m_model.getDownloadStream(downloadFile);
+    }
+
+    @Override
+    public FileType getFileType(T item)
+    {
+        // TODO: maybe add getFileType() in model too
+
+        String name = getItemName(item).toLowerCase();
+
+        if (FileUtils.isImage(name))
+        {
+            return FileType.IMAGE;
+        }
+        else if (FileUtils.isAudio(name))
+        {
+            return FileType.AUDIO;
+        }
+        else if (FileUtils.isVideo(name))
+        {
+            return FileType.VIDEO;
+        }
+        else
+        {
+            LOG.warning("Unknown type for file:"+name);
+            return FileType.UNKNOWN;
+        }
+    }
+
+    @Override
+    public long getFileSize(T item)
+    {
+        return m_model.getFileSize(item);
     }
 
 }

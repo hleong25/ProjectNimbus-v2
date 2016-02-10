@@ -65,3 +65,8 @@ macAppBundle {
 //distZip {
 //    exclude '**/*sources*.jar'
 //}
+
+run {
+    //environment('GST_DEBUG', '3')
+    environment('GST_DEBUG_NO_COLOR', '1')
+}
