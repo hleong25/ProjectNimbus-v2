@@ -109,8 +109,7 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
 
             case AUDIO:
             {
-                //GStreamerFrame.showAudio(this, name, m_controller, item);
-                //GStreamerFrame.showAudio(this, name, istream);
+                GStreamerFrame.showAudio(this, name, m_controller, item);
             }
             break;
 

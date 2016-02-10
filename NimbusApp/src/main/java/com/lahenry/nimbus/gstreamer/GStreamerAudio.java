@@ -5,6 +5,7 @@
  */
 package com.lahenry.nimbus.gstreamer;
 
+import com.lahenry.nimbus.clouds.interfaces.ICloudController;
 import com.lahenry.nimbus.utils.Logit;
 import java.io.InputStream;
 import org.gstreamer.Bin;
@@ -24,21 +25,22 @@ import org.gstreamer.elements.DecodeBin2;
  *
  * @author henry
  */
-public class GStreamerAudio extends GStreamerMedia
+public class GStreamerAudio<T, CC extends ICloudController<T>>
+        extends GStreamerMedia
 {
     private static final Logit LOG = Logit.create(GStreamerAudio.class.getName());
 
-    public GStreamerAudio(String name, InputStream istream)
+    public GStreamerAudio(String name, CC controller, T file)
     {
-        super(name, null, null);
+        super(name, controller, file);
 
-        LOG.entering("<init>", new Object[]{name, istream});
+        LOG.entering("<init>", new Object[]{name, controller, file});
     }
 
     @Override
     public boolean init()
     {
-        Element src = null ;//new InputStreamSrc(m_istream, m_name);
+        Element src = new CloudChannelSrc(m_name, m_controller, m_file);
         DecodeBin2 decodeBin = (DecodeBin2) ElementFactory.make("decodebin2", "Decode Bin");
 
         m_pipe.addMany(src, decodeBin);

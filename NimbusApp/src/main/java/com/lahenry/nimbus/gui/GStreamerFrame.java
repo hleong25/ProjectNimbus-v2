@@ -82,16 +82,23 @@ public class GStreamerFrame extends javax.swing.JFrame
         showAndPlay(parent, frame);
     }
 
-    public static void showAudio(final Component parent, final String title, final InputStream istream)
+    /**
+     * @param <T> - Main data type for the cloud
+     * @param <CC> - ICloudController
+     */
+    public static <T, CC extends ICloudController<T>> void showAudio(final Component parent,
+                                                                     final String title,
+                                                                     final CC controller,
+                                                                     final T file)
     {
-        LOG.entering("showAudio", new Object[]{istream});
+        LOG.entering("showAudio", new Object[]{parent, title, controller, file});
 
         LOG.fine("Creating new GStreamerFrame");
         final GStreamerFrame frame = new GStreamerFrame();
         frame.setTitle(title);
 
         LOG.fine("Creating new GStreamerAudio");
-        frame.m_gst = new GStreamerAudio(title, istream);
+        frame.m_gst = new GStreamerAudio(title, controller, file);
 
         showAndPlay(parent, frame);
     }
