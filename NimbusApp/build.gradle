@@ -67,6 +67,7 @@ macAppBundle {
 //}
 
 run {
+    // set the flags in com.lahenry.nimbus.gstreamer.GStreamerMedia
     //environment('GST_DEBUG', '3')
-    environment('GST_DEBUG_NO_COLOR', '1')
+    //environment('GST_DEBUG_NO_COLOR', '1')
 }

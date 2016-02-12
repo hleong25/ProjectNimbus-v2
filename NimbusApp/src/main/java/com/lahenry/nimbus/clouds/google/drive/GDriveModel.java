@@ -36,6 +36,7 @@ import com.lahenry.nimbus.utils.GlobalCache;
 import com.lahenry.nimbus.utils.GlobalCacheKey;
 import com.lahenry.nimbus.utils.Logit;
 import com.lahenry.nimbus.utils.Tools;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -102,7 +103,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
     {
         LOG.entering("loginViaAuthCode", new Object[]{authCode});
 
-        m_service = null; // make sure the previous object is released
+        m_service = null; // make sure the previous object inputstream released
 
         if (Tools.isNullOrEmpty(authCode))
         {
@@ -454,34 +455,47 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
             LOG.fine("Download size: "+downloadFile.getFileSize());
             LOG.fine(downloadFile.toString());
 
-            //final int CHUNK_SIZE = 4*MediaHttpUploader.MINIMUM_CHUNK_SIZE;
+            final int CHUNK_SIZE = MediaHttpUploader.MINIMUM_CHUNK_SIZE;
 
             Drive.Files.Get request = m_service.files().get(downloadFile.getId());
             request.getMediaHttpDownloader()
-                //.setChunkSize(2*CHUNK_SIZE)
+                .setDirectDownloadEnabled(true)
+                .setChunkSize(CHUNK_SIZE)
                 .setProgressListener(progressListener);
 
             //LOG.fine("ChunkSize: " + request.getMediaHttpDownloader().getChunkSize());
 
-            final String name = getName(downloadFile);
+            InputStream inputstream = request.executeMediaAsInputStream();
 
-            InputStream is = request.executeMediaAsInputStream();
-            InputStream isprog = new InputStreamProgress(is)
+            if (true)
             {
-                @Override
-                public void progress(long offset, int bytesRead)
-                {
-                    LOG.finer("File:'"+name+"' Offset:"+offset+" BytesRead:"+bytesRead);
-                }
+                final String name = getName(downloadFile);
 
-                @Override
-                public void trace(String msg)
+                InputStream isprog = new InputStreamProgress(inputstream)
                 {
-                    LOG.finer("[trace] "+msg);
-                }
-            };
+                    @Override
+                    public void progress(long offset, int bytesRead)
+                    {
+                        //LOG.finer("File:'"+name+"' Offset:"+offset+" BytesRead:"+bytesRead);
+                    }
 
-            return isprog;
+                    @Override
+                    public void trace(String msg)
+                    {
+                        LOG.finer("[trace] "+msg);
+                    }
+                };
+
+                inputstream = isprog;
+            }
+
+            if (true)
+            {
+                InputStream bis = new BufferedInputStream(inputstream, CHUNK_SIZE*2);
+                inputstream = bis;
+            }
+
+            return inputstream;
         }
         catch (IOException ex)
         {
