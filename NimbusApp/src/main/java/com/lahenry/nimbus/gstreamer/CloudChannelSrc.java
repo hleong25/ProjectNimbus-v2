@@ -6,8 +6,8 @@
 package com.lahenry.nimbus.gstreamer;
 
 import com.lahenry.nimbus.clouds.interfaces.ICloudController;
-import com.lahenry.nimbus.io.InputStreamProgress;
 import com.lahenry.nimbus.utils.Logit;
+import java.io.BufferedInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,14 +50,12 @@ public class CloudChannelSrc<T, CC extends ICloudController<T>>
 
         m_stream = getInputStream();
 
-        LOG.fine("Stream="+m_stream);
-
         setFormat(Format.BYTES);
     }
 
     private InputStream getInputStream()
     {
-        LOG.entering("getInputStream");
+        //LOG.entering("getInputStream");
 
         if (m_stream != null)
         {
@@ -71,47 +69,28 @@ public class CloudChannelSrc<T, CC extends ICloudController<T>>
             }
         }
 
+        final boolean useLargeCache = false;
+
         InputStream istream = m_controller.getDownloadStream(m_file);
-        if (true)
-        {
-            return istream;
-        }
-        else
-        {
-            InputStream streamprog = new InputStreamProgress(istream)
-            {
-                @Override
-                public void progress(long offset, int bytesRead)
-                {
-                    LOG.finer("File:'"+m_controller.getItemName(m_file)+"' Offset:"+offset+" BytesRead:"+bytesRead);
-                }
 
-                @Override
-                public void trace(String msg)
-                {
-                    LOG.finer("[trace] "+msg);
-                }
-            };
-
-            return streamprog;
+        if (useLargeCache)
+        {
+            // use large cache
+            int mb = 1024 * 1024;
+            istream = new BufferedInputStream(istream, 1*mb);
         }
+
+        return istream;
     }
 
     private void readFully(long offset, int size, Buffer buffer) throws IOException
     {
-        LOG.entering("readFully", new Object[]{offset, size, buffer});
+        //LOG.entering("readFully", new Object[]{offset, size});
 
-        byte[] tmpbuffer = new byte[size];
         long position = channelPosition;
-
-        if (offset != channelPosition)
-        {
-            m_stream = getInputStream();
-            m_stream.skip(offset);
-        }
-
         buffer.setOffset(position);
 
+        byte[] tmpbuffer = new byte[size];
         int bytesRead = m_stream.read(tmpbuffer);
 
         if (bytesRead < 0)
@@ -133,7 +112,7 @@ public class CloudChannelSrc<T, CC extends ICloudController<T>>
     @Override
     protected FlowReturn srcFillBuffer(long offset, int size, Buffer buffer)
     {
-        //LOG.entering("srcFillBuffer", new Object[]{offset, size, buffer});
+        //LOG.entering("srcFillBuffer", new Object[]{offset, size});
 
         try
         {
@@ -151,7 +130,7 @@ public class CloudChannelSrc<T, CC extends ICloudController<T>>
     @Override
     public boolean srcIsSeekable()
     {
-        return true;
+        return false;
     }
 
     @Override
@@ -161,6 +140,10 @@ public class CloudChannelSrc<T, CC extends ICloudController<T>>
 
         try
         {
+            if (segment.start >= 0)
+            {
+                segment.start = 0;
+            }
             m_stream = getInputStream();
             m_stream.skip(segment.start);
             segment.last_stop = segment.start;

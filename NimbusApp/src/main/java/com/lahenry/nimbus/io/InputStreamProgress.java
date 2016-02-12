@@ -40,7 +40,7 @@ public abstract class InputStreamProgress extends InputStream
     @Override
     public int read (byte[] b) throws IOException
     {
-        trace("read(b[len="+b.length+"])");
+        trace("read(b[size="+b.length+"])");
         int bytesRead = m_istream.read(b);
         progress(m_offset, bytesRead);
         m_offset += bytesRead;
@@ -62,9 +62,10 @@ public abstract class InputStreamProgress extends InputStream
     @Override
     public long skip(long n) throws IOException
     {
-        trace("skip(n="+n+"])");
+        trace("skip(n="+n+")");
         long bytesSkip = m_istream.skip(n);
         m_offset += bytesSkip;
+        trace("skip(n="+n+") bytesSkipped="+bytesSkip+" curroffst="+m_offset);
         return bytesSkip;
     }
 

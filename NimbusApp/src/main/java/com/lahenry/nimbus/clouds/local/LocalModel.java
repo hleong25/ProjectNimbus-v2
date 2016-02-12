@@ -231,23 +231,30 @@ public class LocalModel implements ICloudModel<java.io.File>
         {
             final int BUFFER_SIZE = 256*1024;
             final String name = getName(downloadFile);
-            InputStream fis = new FileInputStream(downloadFile);
-            InputStream isprog = new InputStreamProgress(fis)
-            {
-                @Override
-                public void progress(long offset, int bytesRead)
-                {
-                    LOG.finer("File:'"+name+"' Offset:"+offset+" BytesRead:"+bytesRead);
-                }
+            InputStream inputstream = new FileInputStream(downloadFile);
 
-                @Override
-                public void trace(String msg)
+            if (true)
+            {
+                InputStream isprog = new InputStreamProgress(inputstream)
                 {
-                    LOG.finer("[trace] "+msg);
-                }
-            };
-            InputStream is = new BufferedInputStream(isprog, BUFFER_SIZE);
-            return is;
+                    @Override
+                    public void progress(long offset, int bytesRead)
+                    {
+                        //LOG.finer("File:'"+name+"' Offset:"+offset+" BytesRead:"+bytesRead);
+                    }
+
+                    @Override
+                    public void trace(String msg)
+                    {
+                        LOG.finer("[trace] "+msg);
+                    }
+                };
+
+                inputstream = isprog;
+            }
+
+            inputstream = new BufferedInputStream(inputstream, BUFFER_SIZE);
+            return inputstream;
         }
         catch (FileNotFoundException ex)
         {
