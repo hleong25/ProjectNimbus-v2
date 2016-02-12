@@ -56,7 +56,12 @@ public abstract class GStreamerMedia<T, CC extends ICloudController<T>>
 
             LOG.info("Initializing GStreamer");
 
-            Gst.init(AppInfo.NAME, new String[]{});
+            final String GSTREAMER_ARGS[] = new String[]{
+                "--gst-debug-level=2",
+                "--gst-debug-no-color=1",
+            };
+
+            Gst.init(AppInfo.NAME, GSTREAMER_ARGS);
 
             LOG.info(Gst.getVersionString());
         }

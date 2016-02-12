@@ -230,11 +230,12 @@ public class LocalModel implements ICloudModel<java.io.File>
         try
         {
             final int BUFFER_SIZE = 256*1024;
-            final String name = getName(downloadFile);
             InputStream inputstream = new FileInputStream(downloadFile);
 
             if (true)
             {
+                final String name = getName(downloadFile);
+
                 InputStream isprog = new InputStreamProgress(inputstream)
                 {
                     @Override
