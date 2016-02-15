@@ -9,6 +9,7 @@ import com.lahenry.nimbus.io.InputStreamProgress;
 import com.lahenry.nimbus.clouds.interfaces.ICloudModel;
 import com.lahenry.nimbus.clouds.interfaces.ICloudProgress;
 import com.lahenry.nimbus.clouds.interfaces.ICloudTransfer;
+import com.lahenry.nimbus.io.OutputToInputStream;
 import com.lahenry.nimbus.utils.GlobalCache;
 import com.lahenry.nimbus.utils.GlobalCacheKey;
 import com.lahenry.nimbus.utils.Histogram;
@@ -23,9 +24,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.filechooser.FileSystemView;
 
 /**
@@ -232,7 +237,7 @@ public class LocalModel implements ICloudModel<java.io.File>
             final int BUFFER_SIZE = 256*1024;
             InputStream inputstream = new FileInputStream(downloadFile);
 
-            if (true)
+            if (false)
             {
                 final String name = getName(downloadFile);
 
@@ -254,13 +259,31 @@ public class LocalModel implements ICloudModel<java.io.File>
                 inputstream = isprog;
             }
 
-            inputstream = new BufferedInputStream(inputstream, BUFFER_SIZE);
+            //inputstream = new BufferedInputStream(inputstream, BUFFER_SIZE);
+
+            try
+            {
+                OutputToInputStream o2istream = new OutputToInputStream(BUFFER_SIZE, inputstream);
+                o2istream.startReading();
+
+                inputstream = o2istream;
+            }
+            catch (IOException ex)
+            {
+                LOG.throwing("getDownloadStream", ex);
+                LOG.fine("Not using piped streams");
+            }
+
             return inputstream;
         }
         catch (FileNotFoundException ex)
         {
             LOG.throwing("getDownloadStream", ex);
         }
+        //catch (IOException ex)
+        //{
+        //    LOG.throwing("getDownloadStream", ex);
+        //}
 
         return null;
     }

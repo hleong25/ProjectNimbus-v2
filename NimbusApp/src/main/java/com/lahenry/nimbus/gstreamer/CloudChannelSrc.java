@@ -55,7 +55,7 @@ public class CloudChannelSrc<T, CC extends ICloudController<T>>
 
     private InputStream getInputStream()
     {
-        //LOG.entering("getInputStream");
+        LOG.entering("getInputStream");
 
         if (m_stream != null)
         {
@@ -116,15 +116,43 @@ public class CloudChannelSrc<T, CC extends ICloudController<T>>
 
         try
         {
-            readFully(offset, size, buffer);
+            final long offset1 = offset;
+            final int size1 = size;
+            final Buffer buffer1 = buffer;
+
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run()
+                {
+                    try
+                    {
+                        readFully(offset1, size1, buffer1);
+                    }
+                    catch (IOException ex)
+                    {
+                        LOG.throwing("srcFillBuffer.thread", ex);
+                    }
+                }
+            });
+
+            thread.start();
+            thread.join();
+
             return FlowReturn.OK;
         }
-        catch (IOException ex)
+        catch (InterruptedException ex)
         {
+            //Logger.getLogger(CloudChannelSrc.class.getName()).log(Level.SEVERE, null, ex);
             signalError();
             LOG.throwing("srcFillBuffer", ex);
             return FlowReturn.UNEXPECTED;
         }
+        //catch (IOException ex)
+        //{
+        //    signalError();
+        //    LOG.throwing("srcFillBuffer", ex);
+        //    return FlowReturn.UNEXPECTED;
+        //}
     }
 
     @Override
@@ -142,7 +170,9 @@ public class CloudChannelSrc<T, CC extends ICloudController<T>>
         {
             if (segment.start >= 0)
             {
-                segment.start = 0;
+                LOG.fine("segment.start >= 0");
+                return false;
+                //segment.start = 0;
             }
             m_stream = getInputStream();
             m_stream.skip(segment.start);

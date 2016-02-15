@@ -37,7 +37,7 @@ public final class BusyTaskCursor
                 try
                 {
                     //Tools.logit("BusyTaskCursor.doTask() cursor busy");
-                    component.setCursor(CURSOR_BUSY);
+                    if (component != null) component.setCursor(CURSOR_BUSY);
 
                     ResponsiveTaskUI.yield();
 
@@ -47,7 +47,7 @@ public final class BusyTaskCursor
                 finally
                 {
                     //Tools.logit("BusyTaskCursor.doTask() cursor default");
-                    component.setCursor(CURSOR_DEFAULT);
+                    if (component != null) component.setCursor(CURSOR_DEFAULT);
                 }
             }
         });

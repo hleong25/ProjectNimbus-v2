@@ -56,7 +56,7 @@ public class GStreamerFrame extends javax.swing.JFrame
         frame.setTitle(title);
 
         LOG.fine("Creating new GStreamerVideo");
-        frame.m_gst = new GStreamerVideo(title, controller, file);
+        frame.m_gst = new GStreamerVideo<T, CC>(title, controller, file);
 
         frame.setupVideo();
 
@@ -98,7 +98,7 @@ public class GStreamerFrame extends javax.swing.JFrame
         frame.setTitle(title);
 
         LOG.fine("Creating new GStreamerAudio");
-        frame.m_gst = new GStreamerAudio(title, controller, file);
+        frame.m_gst = new GStreamerAudio<T, CC>(title, controller, file);
 
         showAndPlay(parent, frame);
     }

@@ -7,6 +7,9 @@ package com.lahenry.nimbus.gstreamer;
 
 import com.lahenry.nimbus.clouds.interfaces.ICloudController;
 import com.lahenry.nimbus.utils.Logit;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
 import org.gstreamer.Bin;
 import org.gstreamer.Bus;
 import org.gstreamer.Caps;
@@ -27,7 +30,7 @@ import org.gstreamer.swing.VideoComponent;
  * @param <CC> - ICloudController
  */
 public class GStreamerVideo<T, CC extends ICloudController<T>>
-        extends GStreamerMedia
+        extends GStreamerMedia<T, CC>
 {
     private static final Logit LOG = Logit.create(GStreamerVideo.class.getName());
 
@@ -40,14 +43,43 @@ public class GStreamerVideo<T, CC extends ICloudController<T>>
 
         LOG.entering("<init>", new Object[]{name, controller, file});
 
-        m_istreamsrc = new CloudChannelSrc(m_name, m_controller, m_file);
+        m_istreamsrc = new CloudChannelSrc<T, CC>(m_name, m_controller, m_file);
         m_videocomponent = new VideoComponent();
+    }
+
+    //@Override
+    public boolean init1()
+    {
+        InputStream istream = m_controller.getDownloadStream((T)m_file);
+
+        final int BUFFER_SIZE = 256*1024;
+        byte[] buffer = new byte[BUFFER_SIZE];
+
+        long bytesRead = 0;
+        long total = 0;
+
+        try
+        {
+            while ((bytesRead = istream.read(buffer, 0, BUFFER_SIZE)) > 0)
+            {
+                total += bytesRead;
+
+                System.out.println("Read:"+bytesRead+" Total:"+total+" Data:"+Arrays.toString(Arrays.copyOf(buffer, 16)));
+
+            }
+        }
+        catch (IOException ex)
+        {
+            LOG.throwing("init", ex);
+        }
+
+        return true;
     }
 
     @Override
     public boolean init()
     {
-        Element src = new CloudChannelSrc(m_name, m_controller, m_file);
+        Element src = new CloudChannelSrc<T, CC>(m_name, m_controller, m_file);
 
         DecodeBin2 decodeBin = (DecodeBin2) createElement("decodebin2");
 
