@@ -237,7 +237,7 @@ public class LocalModel implements ICloudModel<java.io.File>
             final int BUFFER_SIZE = 256*1024;
             InputStream inputstream = new FileInputStream(downloadFile);
 
-            if (false)
+            if (true)
             {
                 final String name = getName(downloadFile);
 
@@ -259,19 +259,25 @@ public class LocalModel implements ICloudModel<java.io.File>
                 inputstream = isprog;
             }
 
-            //inputstream = new BufferedInputStream(inputstream, BUFFER_SIZE);
-
-            try
+            if (true)
             {
-                OutputToInputStream o2istream = new OutputToInputStream(BUFFER_SIZE, inputstream);
-                o2istream.startReading();
-
-                inputstream = o2istream;
+                inputstream = new BufferedInputStream(inputstream, BUFFER_SIZE);
             }
-            catch (IOException ex)
+
+            if (false)
             {
-                LOG.throwing("getDownloadStream", ex);
-                LOG.fine("Not using piped streams");
+                try
+                {
+                    OutputToInputStream o2istream = new OutputToInputStream(BUFFER_SIZE, inputstream);
+                    o2istream.startReading();
+
+                    inputstream = o2istream;
+                }
+                catch (IOException ex)
+                {
+                    LOG.throwing("getDownloadStream", ex);
+                    LOG.fine("Not using piped streams");
+                }
             }
 
             return inputstream;

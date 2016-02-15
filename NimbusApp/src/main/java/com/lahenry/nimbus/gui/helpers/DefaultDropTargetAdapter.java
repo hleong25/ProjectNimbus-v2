@@ -76,8 +76,6 @@ public abstract class DefaultDropTargetAdapter extends DropTargetAdapter
                         key = list.get(0);
                     }
 
-                    LOG.warning("Using GlobalCacheKey="+key);
-
                     tc = new TransferableContainer(key, (List) transferable.getTransferData(flavor));
                 }
                 else if (TransferableAdapter.isNimbusDataFlavorSupported(flavor))
@@ -91,6 +89,8 @@ public abstract class DefaultDropTargetAdapter extends DropTargetAdapter
                 {
                     tc = null;
                 }
+
+                LOG.fine("Source cache key="+tc.getSourceCacheKey());
 
                 ResponsiveTaskUI.doTask(new ResponsiveTaskUI.IResponsiveTask()
                 {
