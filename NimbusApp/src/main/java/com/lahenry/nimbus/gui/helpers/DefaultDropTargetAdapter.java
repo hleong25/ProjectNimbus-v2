@@ -5,8 +5,10 @@
  */
 package com.lahenry.nimbus.gui.helpers;
 
+import com.lahenry.nimbus.clouds.local.LocalController;
 import com.lahenry.nimbus.gui.datatransfer.TransferableAdapter;
 import com.lahenry.nimbus.gui.datatransfer.TransferableContainer;
+import com.lahenry.nimbus.utils.GlobalCache;
 import com.lahenry.nimbus.utils.GlobalCacheKey;
 import com.lahenry.nimbus.utils.Logit;
 import java.awt.datatransfer.DataFlavor;
@@ -14,6 +16,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -59,9 +62,23 @@ public abstract class DefaultDropTargetAdapter extends DropTargetAdapter
                     LOG.fine("Drag&Drop from system");
                     LOG.fine("Flavor mime: "+flavor.getMimeType());
                     // Get all of the dropped files
-                    // HL: this might not work
-                    // TODO: check for unchecked or unsafe operations
-                    tc = new TransferableContainer(GlobalCacheKey.Empty, (List) transferable.getTransferData(flavor));
+
+                    final GlobalCacheKey key;
+                    GlobalCache gc = GlobalCache.getInstance();
+                    ArrayList<GlobalCacheKey> list = gc.findKey(LocalController.class.getName());
+
+                    if (list.isEmpty())
+                    {
+                        key = GlobalCacheKey.Empty;
+                    }
+                    else
+                    {
+                        key = list.get(0);
+                    }
+
+                    LOG.warning("Using GlobalCacheKey="+key);
+
+                    tc = new TransferableContainer(key, (List) transferable.getTransferData(flavor));
                 }
                 else if (TransferableAdapter.isNimbusDataFlavorSupported(flavor))
                 {
