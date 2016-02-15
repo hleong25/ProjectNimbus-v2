@@ -92,7 +92,7 @@ public final class GlobalCache
 
         for (Map.Entry<GlobalCacheKey, Object> entry : entrySet())
         {
-            if (entry.getValue().toString().startsWith(needle))
+            if (entry.getValue().toString().indexOf(needle) != -1)
             {
                 list.add(entry.getKey());
             }
