@@ -5,6 +5,7 @@
  */
 package com.lahenry.nimbus.utils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -83,5 +84,25 @@ public final class GlobalCache
             }
         }
         return GlobalCacheKey.Empty;
+    }
+
+    public ArrayList<GlobalCacheKey> findKey(final String needle)
+    {
+        ArrayList<GlobalCacheKey> list = new ArrayList<>();
+
+        for (Map.Entry<GlobalCacheKey, Object> entry : entrySet())
+        {
+            if (entry.getValue().toString().startsWith(needle))
+            {
+                list.add(entry.getKey());
+            }
+        }
+
+        if (list.isEmpty())
+        {
+            list.add(GlobalCacheKey.Empty);
+        }
+
+        return list;
     }
 }
