@@ -146,6 +146,7 @@ public class LocalPanel
     @Override
     public XferHolder<?, File> createXferHolder(GlobalCacheKey sourceCacheKey, Object input)
     {
+        LOG.entering("createXferHolder", new Object[]{sourceCacheKey, input});
         final GlobalCacheKey targetCacheKey = GlobalCache.getInstance().getKey(m_controller);
         //LOG.finer("xferholder sourceCacheKey:"+sourceCacheKey+" targetCacheKey:"+targetCacheKey);
         final ICloudController genericInputController = (ICloudController) GlobalCache.getInstance().get(sourceCacheKey);

@@ -68,9 +68,11 @@ public class OutputToInputStream extends PipedInputStream
 
                 try
                 {
-                    while (!m_closeobj.getClose() && (bytesRead = m_inputstreamsrc.read(buffer)) >= 0)
+                    while ((!m_closeobj.getClose()) &&
+                           (m_inputstreamsrc.available() > 0) &&
+                           ((bytesRead = m_inputstreamsrc.read(buffer)) >= 0))
                     {
-                        if (bytesRead == 0) continue;
+                        if (bytesRead <= -1) break;
                         LOG.finer("Write:"+bytesRead+" Total:"+total+" Data:"+Arrays.toString(Arrays.copyOf(buffer, 16)));
                         try
                         {

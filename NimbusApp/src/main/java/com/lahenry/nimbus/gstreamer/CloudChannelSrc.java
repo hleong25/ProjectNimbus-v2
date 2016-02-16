@@ -12,6 +12,8 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.gstreamer.Buffer;
 import org.gstreamer.ClockTime;
 import org.gstreamer.FlowReturn;
@@ -48,26 +50,14 @@ public class CloudChannelSrc<T, CC extends ICloudController<T>>
         m_controller = controller;
         m_file = file;
 
-        m_stream = getInputStream();
+        setInputStream();
 
         setFormat(Format.BYTES);
     }
 
-    private InputStream getInputStream()
+    private void setInputStream()
     {
-        LOG.entering("getInputStream");
-
-        if (m_stream != null)
-        {
-            try
-            {
-                m_stream.close();
-            }
-            catch (IOException ex)
-            {
-                LOG.throwing("getInputStream", ex);
-            }
-        }
+        LOG.entering("setInputStream");
 
         final boolean useLargeCache = false;
 
@@ -80,7 +70,7 @@ public class CloudChannelSrc<T, CC extends ICloudController<T>>
             istream = new BufferedInputStream(istream, 1*mb);
         }
 
-        return istream;
+        istream = m_stream;
     }
 
     private void readFully(long offset, int size, Buffer buffer) throws IOException
@@ -112,81 +102,34 @@ public class CloudChannelSrc<T, CC extends ICloudController<T>>
     @Override
     protected FlowReturn srcFillBuffer(long offset, int size, Buffer buffer)
     {
-        //LOG.entering("srcFillBuffer", new Object[]{offset, size});
-
         try
         {
-            final long offset1 = offset;
-            final int size1 = size;
-            final Buffer buffer1 = buffer;
-
-            Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run()
-                {
-                    try
-                    {
-                        readFully(offset1, size1, buffer1);
-                    }
-                    catch (IOException ex)
-                    {
-                        LOG.throwing("srcFillBuffer.thread", ex);
-                    }
-                }
-            });
-
-            thread.start();
-            thread.join();
-
+            //LOG.entering("srcFillBuffer", new Object[]{offset, size});
+            readFully(offset, size, buffer);
             return FlowReturn.OK;
         }
-        catch (InterruptedException ex)
+        catch (IOException ex)
         {
-            //Logger.getLogger(CloudChannelSrc.class.getName()).log(Level.SEVERE, null, ex);
             signalError();
             LOG.throwing("srcFillBuffer", ex);
             return FlowReturn.UNEXPECTED;
         }
-        //catch (IOException ex)
-        //{
-        //    signalError();
-        //    LOG.throwing("srcFillBuffer", ex);
-        //    return FlowReturn.UNEXPECTED;
-        //}
     }
 
-    @Override
-    public boolean srcIsSeekable()
-    {
-        return false;
-    }
+    //@Override
+    //public boolean srcIsSeekable()
+    //{
+    //    return fileChannel != null;
+    //}
 
     @Override
     protected boolean srcSeek(GstSegmentStruct segment)
     {
         LOG.entering("srcSeek", new Object[]{segment});
 
-        try
-        {
-            if (segment.start >= 0)
-            {
-                LOG.fine("segment.start >= 0");
-                return false;
-                //segment.start = 0;
-            }
-            m_stream = getInputStream();
-            m_stream.skip(segment.start);
-            segment.last_stop = segment.start;
-            segment.time = segment.start;
-            segment.write();
-            return true;
-        }
-        catch (IOException ex)
-        {
-            signalError();
-            LOG.throwing("srcSeek", ex);
-            return false;
-        }
+        // Always return true for non-seekable channels, otherwise the sink
+        // doesn't receive any segments
+        return true;
     }
 
     @Override

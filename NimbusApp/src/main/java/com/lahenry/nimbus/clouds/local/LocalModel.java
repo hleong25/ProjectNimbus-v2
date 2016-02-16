@@ -147,8 +147,28 @@ public class LocalModel implements ICloudModel<java.io.File>
         LOG.entering("transfering", new Object[]{transfer});
 
         final int BUFFER_SIZE = 256*1024;
-        final InputStream is = transfer.getInputStream();
+        InputStream is = transfer.getInputStream();
         OutputStream os = null;
+
+        if (true)
+        {
+            InputStream isprog = new InputStreamProgress(is)
+            {
+                @Override
+                public void progress(long offset, int bytesRead)
+                {
+                    LOG.finer("transfer(): File:'"+"henry"+"' Offset:"+offset+" BytesRead:"+bytesRead);
+                }
+
+                @Override
+                public void trace(String msg)
+                {
+                    LOG.finer("transfer(): [trace] "+msg);
+                }
+            };
+
+            is = isprog;
+        }
 
         try
         {
@@ -246,13 +266,13 @@ public class LocalModel implements ICloudModel<java.io.File>
                     @Override
                     public void progress(long offset, int bytesRead)
                     {
-                        //LOG.finer("File:'"+name+"' Offset:"+offset+" BytesRead:"+bytesRead);
+                        //LOG.finer("getDownloadStream(): File:'"+name+"' Offset:"+offset+" BytesRead:"+bytesRead);
                     }
 
                     @Override
                     public void trace(String msg)
                     {
-                        LOG.finer("[trace] "+msg);
+                        LOG.finer("getDownloadStream(): [trace] "+msg);
                     }
                 };
 
@@ -264,7 +284,7 @@ public class LocalModel implements ICloudModel<java.io.File>
                 inputstream = new BufferedInputStream(inputstream, BUFFER_SIZE);
             }
 
-            if (false)
+            if (true)
             {
                 try
                 {
