@@ -53,7 +53,7 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
 
     protected T m_currentPath;
 
-    protected /*ICloudTransfer*/ Object m_xferObject;
+    protected /*ICloudTransfer*/ Object m_xferObject; // TODO -- check genetics
 
     protected CloudPanelAdapter()
     {
@@ -66,7 +66,10 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
         LOG.entering("disposePanel");
         m_canTransfer.set(false);
 
+        LOG.fine("Tools.wait(m_xferObject)");
         Tools.wait(m_xferObject);
+
+        LOG.exiting("disposePanel");
     }
 
     @Override

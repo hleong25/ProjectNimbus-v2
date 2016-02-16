@@ -9,7 +9,8 @@ import com.lahenry.nimbus.io.InputStreamProgress;
 import com.lahenry.nimbus.clouds.interfaces.ICloudModel;
 import com.lahenry.nimbus.clouds.interfaces.ICloudProgress;
 import com.lahenry.nimbus.clouds.interfaces.ICloudTransfer;
-import com.lahenry.nimbus.io.OutputToInputStreamTemp;
+import com.lahenry.nimbus.io.InputStreamProxy;
+import com.lahenry.nimbus.io.PipedStreams;
 import com.lahenry.nimbus.utils.GlobalCache;
 import com.lahenry.nimbus.utils.GlobalCacheKey;
 import com.lahenry.nimbus.utils.Histogram;
@@ -24,13 +25,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.filechooser.FileSystemView;
 
 /**
@@ -286,18 +283,20 @@ public class LocalModel implements ICloudModel<java.io.File>
 
             if (true)
             {
-                try
-                {
-                    OutputToInputStreamTemp o2istream = new OutputToInputStreamTemp(BUFFER_SIZE, inputstream);
-                    o2istream.startReading();
+                final PipedStreams pipedstreams = new PipedStreams();
 
-                    inputstream = o2istream;
-                }
-                catch (IOException ex)
+                InputStreamProxy isproxy = new InputStreamProxy(inputstream)
                 {
-                    LOG.throwing("getDownloadStream", ex);
-                    LOG.fine("Not using piped streams");
-                }
+                    @Override
+                    public void close() throws IOException
+                    {
+                        pipedstreams.close();
+                    }
+                };
+
+                pipedstreams.fillStream(inputstream);
+
+                inputstream = pipedstreams.getInputStream();
             }
 
             return inputstream;
@@ -306,10 +305,10 @@ public class LocalModel implements ICloudModel<java.io.File>
         {
             LOG.throwing("getDownloadStream", ex);
         }
-        //catch (IOException ex)
-        //{
-        //    LOG.throwing("getDownloadStream", ex);
-        //}
+        catch (IOException ex)
+        {
+            LOG.throwing("getDownloadStream", ex);
+        }
 
         return null;
     }

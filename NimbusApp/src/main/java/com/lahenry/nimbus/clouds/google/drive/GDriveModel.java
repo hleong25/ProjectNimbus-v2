@@ -31,20 +31,17 @@ import com.lahenry.nimbus.clouds.interfaces.ICloudModel;
 import com.lahenry.nimbus.clouds.interfaces.ICloudProgress;
 import com.lahenry.nimbus.clouds.interfaces.ICloudTransfer;
 import com.lahenry.nimbus.io.InputStreamProgress;
+import com.lahenry.nimbus.io.InputStreamProxy;
 import com.lahenry.nimbus.io.OutputStreamProgress;
+import com.lahenry.nimbus.io.PipedStreams;
 import com.lahenry.nimbus.mainapp.AppInfo;
 import com.lahenry.nimbus.utils.GlobalCache;
 import com.lahenry.nimbus.utils.GlobalCacheKey;
 import com.lahenry.nimbus.utils.Logit;
 import com.lahenry.nimbus.utils.Tools;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -464,116 +461,104 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
             //final int CHUNK_SIZE = MediaHttpDownloader.MAXIMUM_CHUNK_SIZE;
             final int CHUNK_SIZE = MediaHttpUploader.MINIMUM_CHUNK_SIZE;
 
-            Drive.Files.Get request = m_service.files().get(downloadFile.getId());
+            final Drive.Files.Get request = m_service.files().get(downloadFile.getId());
             request.getMediaHttpDownloader()
-                //.setDirectDownloadEnabled(true)
+                .setDirectDownloadEnabled(true)
                 .setChunkSize(CHUNK_SIZE)
                 .setProgressListener(progressListener);
 
-            //LOG.fine("ChunkSize: " + request.getMediaHttpDownloader().getChunkSize());
+            InputStream inputstream;
 
-            PipedInputStream pis = new PipedInputStream(2*CHUNK_SIZE);
-            //PipedInputStream pis = new PipedInputStream(downloadFile.getFileSize().intValue());
-            OutputStream os = new PipedOutputStream(pis);
-
-            InputStream inputstream = new InputStreamProgress(pis)
-            {
-                @Override
-                public void progress(long offset, int bytesRead)
-                {
-                    //LOG.finer("File:'"+name+"' Offset:"+offset+" BytesRead:"+bytesRead);
-                }
-
-                @Override
-                public void trace(String msg)
-                {
-                    LOG.finer("[trace] "+msg);
-                }
-            };
-
-            request.executeMediaAndDownloadTo(os);
-
-            return inputstream;
-
-            /*
             if (true)
             {
-                Drive.Files.Get request1 = m_service.files().get(downloadFile.getId());
-                request1.getMediaHttpDownloader()
-                    //.setDirectDownloadEnabled(true)
-                    .setChunkSize(CHUNK_SIZE)
-                    .setProgressListener(progressListener);
+                LOG.info("Using piped streams");
 
-                OutputStream ostream = new ByteArrayOutputStream(downloadFile.getFileSize().intValue());
+                final PipedStreams pipedstreams = new PipedStreams();
+                OutputStream outputStream = pipedstreams.getOutputStream();
 
                 if (true)
                 {
-                    OutputStreamProgress osprog = new OutputStreamProgress(ostream)
+                    OutputStreamProgress osprog = new OutputStreamProgress(outputStream)
                     {
                         @Override
                         public void progress(long offset, int bytesWritten)
                         {
-                            //LOG.finer("File:'"+name+"' Offset:"+offset+" BytesWritten:"+bytesWritten);
+                            //LOG.finer("transfer(): File:'"+name+"' Offset:"+offset+" BytesRead:"+bytesRead);
                         }
 
                         @Override
                         public void trace(String msg)
                         {
-                            LOG.finer("[trace] "+msg);
+                            LOG.finer("transfer(): [trace] "+msg);
                         }
                     };
-                    ostream = osprog;
+
+                    outputStream = osprog;
                 }
+
+                final OutputStream fos = outputStream;
+
+                Thread thread = new Thread(new Runnable(){
+                    @Override
+                    public void run()
+                    {
+                        try
+                        {
+                            request.executeMediaAndDownloadTo(fos);
+                        }
+                        catch (IOException ex)
+                        {
+                            LOG.throwing("getDownloadStream.run()", ex);
+                        }
+                    }
+                });
+                thread.start();
+
+                inputstream = pipedstreams.getInputStream();
 
                 if (true)
                 {
-                    OutputStream bos = new BufferedOutputStream(ostream, 2*CHUNK_SIZE);
-                    ostream = bos;
-                }
+                    InputStreamProxy isproxy = new InputStreamProxy(inputstream)
+                    {
+                        @Override
+                        public void close() throws IOException
+                        {
+                            pipedstreams.close();
+                        }
+                    };
 
-                request1.executeMediaAndDownloadTo(ostream);
+                    inputstream = isproxy;
+                }
+            }
+            else
+            {
+                LOG.info("Using input stream");
+                inputstream = request.executeMediaAsInputStream();
             }
 
-            Drive.Files.Get request = m_service.files().get(downloadFile.getId());
-            request.getMediaHttpDownloader()
-                //.setDirectDownloadEnabled(true)
-                //.setChunkSize(CHUNK_SIZE)
-                .setProgressListener(progressListener);
-
-            //LOG.fine("ChunkSize: " + request.getMediaHttpDownloader().getChunkSize());
-
-            InputStream inputstream = request.executeMediaAsInputStream();
-
-            if (true)
+            if (false)
             {
-                final String name = getName(downloadFile);
+                //final String name = getName(downloadFile);
 
                 InputStream isprog = new InputStreamProgress(inputstream)
                 {
                     @Override
                     public void progress(long offset, int bytesRead)
                     {
-                        //LOG.finer("File:'"+name+"' Offset:"+offset+" BytesRead:"+bytesRead);
+                        //LOG.finer("getDownloadStream(): File:'"+name+"' Offset:"+offset+" BytesRead:"+bytesRead);
                     }
 
                     @Override
                     public void trace(String msg)
                     {
-                        LOG.finer("[trace] "+msg);
+                        LOG.finer("getDownloadStream(): [trace] "+msg);
                     }
                 };
 
                 inputstream = isprog;
             }
 
-            if (true)
-            {
-                InputStream bis = new BufferedInputStream(inputstream, CHUNK_SIZE*2);
-                inputstream = bis;
-            }
-
             return inputstream;
-            */
         }
         catch (IOException ex)
         {

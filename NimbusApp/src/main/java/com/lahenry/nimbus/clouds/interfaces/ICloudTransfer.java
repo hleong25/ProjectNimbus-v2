@@ -27,7 +27,7 @@ public interface ICloudTransfer<S, T>
     InputStream getInputStream();
 
     void setProgressHandler(ICloudProgress progress);
-    ICloudProgress getProgressHandler();
+    ICloudProgress getProgressHandler(); // TODO -- check genetics
 
     void setCanTransfer(AtomicBoolean canTransfer);
     boolean getCanTransfer();
