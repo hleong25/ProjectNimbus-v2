@@ -16,16 +16,16 @@ import java.util.Arrays;
  *
  * @author henry
  */
-public class OutputToInputStream extends PipedInputStream
+public class OutputToInputStreamTemp extends PipedInputStream
 {
-    private static final Logit LOG = Logit.create(OutputToInputStream.class.getName());
+    private static final Logit LOG = Logit.create(OutputToInputStreamTemp.class.getName());
 
     protected final PipedOutputStream m_pout;
     protected final InputStream m_inputstreamsrc;
 
     protected Thread m_thread;
 
-    public OutputToInputStream(int bufferSize, final InputStream inputstreamsrc) throws IOException
+    public OutputToInputStreamTemp(int bufferSize, final InputStream inputstreamsrc) throws IOException
     {
         super(bufferSize);
 

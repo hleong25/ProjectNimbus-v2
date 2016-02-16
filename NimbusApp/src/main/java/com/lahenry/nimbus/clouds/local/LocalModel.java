@@ -9,7 +9,7 @@ import com.lahenry.nimbus.io.InputStreamProgress;
 import com.lahenry.nimbus.clouds.interfaces.ICloudModel;
 import com.lahenry.nimbus.clouds.interfaces.ICloudProgress;
 import com.lahenry.nimbus.clouds.interfaces.ICloudTransfer;
-import com.lahenry.nimbus.io.OutputToInputStream;
+import com.lahenry.nimbus.io.OutputToInputStreamTemp;
 import com.lahenry.nimbus.utils.GlobalCache;
 import com.lahenry.nimbus.utils.GlobalCacheKey;
 import com.lahenry.nimbus.utils.Histogram;
@@ -288,7 +288,7 @@ public class LocalModel implements ICloudModel<java.io.File>
             {
                 try
                 {
-                    OutputToInputStream o2istream = new OutputToInputStream(BUFFER_SIZE, inputstream);
+                    OutputToInputStreamTemp o2istream = new OutputToInputStreamTemp(BUFFER_SIZE, inputstream);
                     o2istream.startReading();
 
                     inputstream = o2istream;

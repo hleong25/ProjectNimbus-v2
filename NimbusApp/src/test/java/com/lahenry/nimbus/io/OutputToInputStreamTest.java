@@ -74,14 +74,14 @@ public class OutputToInputStreamTest
     //public void testClose() throws Exception
     //{
     //    System.out.println("close");
-    //    OutputToInputStream instance = null;
+    //    OutputToInputStreamTemp instance = null;
     //    instance.close();
     //    // TODO review the generated test code and remove the default call to fail.
     //    fail("The test case is a prototype.");
     //}
 
     /**
-     * Test of startReading method, of class OutputToInputStream.
+     * Test of startReading method, of class OutputToInputStreamTemp.
      */
     @Test
     public void testStartReading()
@@ -89,7 +89,7 @@ public class OutputToInputStreamTest
         return;
         /*
         System.out.println("startReading");
-        OutputToInputStream instance;
+        OutputToInputStreamTemp instance;
         try
         {
             instance = getInputStream();
@@ -101,15 +101,15 @@ public class OutputToInputStreamTest
         catch (IOException ex)
         {
             Logger.getLogger(OutputToInputStreamTest.class.getName()).log(Level.SEVERE, null, ex);
-            fail("Cannot create instance of OutputToInputStream");
+            fail("Cannot create instance of OutputToInputStreamTemp");
         }
         */
     }
 
-    private OutputToInputStream getInputStream() throws IOException
+    private OutputToInputStreamTemp getInputStream() throws IOException
     {
         final int BUFFER_SIZE = 256*1024;
-        OutputToInputStream inputstream = new OutputToInputStream(BUFFER_SIZE, m_istream);
+        OutputToInputStreamTemp inputstream = new OutputToInputStreamTemp(BUFFER_SIZE, m_istream);
         return inputstream;
     }
 
@@ -157,7 +157,7 @@ public class OutputToInputStreamTest
     //public void testFinalize() throws Exception
     //{
     //    System.out.println("finalize");
-    //    OutputToInputStream instance = null;
+    //    OutputToInputStreamTemp instance = null;
     //    instance.finalize();
     //    // TODO review the generated test code and remove the default call to fail.
     //    fail("The test case is a prototype.");
@@ -170,7 +170,7 @@ public class OutputToInputStreamTest
     //public void testCanRead()
     //{
     //    System.out.println("canRead");
-    //    OutputToInputStream instance = null;
+    //    OutputToInputStreamTemp instance = null;
     //    boolean expResult = false;
     //    boolean result = instance.canRead();
     //    assertEquals(expResult, result);
