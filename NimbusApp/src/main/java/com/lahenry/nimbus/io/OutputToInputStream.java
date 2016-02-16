@@ -11,8 +11,6 @@ import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -25,29 +23,7 @@ public class OutputToInputStream extends PipedInputStream
     protected final PipedOutputStream m_pout;
     protected final InputStream m_inputstreamsrc;
 
-    private class CloseStream
-    {
-        private boolean m_close;
-
-        public CloseStream()
-        {
-            m_close = false;
-        }
-
-        public void setClose(boolean val)
-        {
-            m_close = val;
-        }
-
-        public boolean getClose()
-        {
-            return m_close;
-        }
-    };
-
-    protected final CloseStream m_closeobj = new CloseStream();
-
-    protected final Thread m_thread;
+    protected Thread m_thread;
 
     public OutputToInputStream(int bufferSize, final InputStream inputstreamsrc) throws IOException
     {
@@ -56,6 +32,11 @@ public class OutputToInputStream extends PipedInputStream
         m_pout = new PipedOutputStream(this);
         m_inputstreamsrc = inputstreamsrc;
 
+        setupThread();
+    }
+
+    private void setupThread()
+    {
         Runnable runnable = new Runnable() {
             @Override
             public void run()
@@ -68,8 +49,7 @@ public class OutputToInputStream extends PipedInputStream
 
                 try
                 {
-                    while ((!m_closeobj.getClose()) &&
-                           (m_inputstreamsrc.available() > 0) &&
+                    while ((m_inputstreamsrc.available() > 0) &&
                            ((bytesRead = m_inputstreamsrc.read(buffer)) >= 0))
                     {
                         if (bytesRead <= -1) break;
@@ -82,7 +62,6 @@ public class OutputToInputStream extends PipedInputStream
                         catch (IOException ex)
                         {
                             LOG.throwing("<init>.runnable.run.while", ex);
-                            m_closeobj.setClose(true);
                         }
                     }
                 }
@@ -92,8 +71,6 @@ public class OutputToInputStream extends PipedInputStream
                 }
                 finally
                 {
-                    m_closeobj.setClose(true);
-
                     //try
                     //{
                     //    m_inputstreamsrc.close();
@@ -116,8 +93,6 @@ public class OutputToInputStream extends PipedInputStream
         super.close();
 
         LOG.entering("close");
-
-        m_closeobj.setClose(true);
 
         m_inputstreamsrc.close();
         //m_pout.close();
@@ -148,11 +123,6 @@ public class OutputToInputStream extends PipedInputStream
         super.finalize();
 
         close();
-    }
-
-    public boolean canRead()
-    {
-        return !m_closeobj.getClose();
     }
 
 }
