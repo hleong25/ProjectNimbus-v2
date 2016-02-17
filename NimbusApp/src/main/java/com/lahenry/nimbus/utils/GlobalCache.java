@@ -54,6 +54,9 @@ public final class GlobalCache
 
     public Object put(final IProperties props, String key, Object value)
     {
+        // TODO: When you add the same account multiple times,
+        //       the previous one is removed.
+
         String pkgkey = ((props != null) ? props.getPackageName()+"/" : "")+key;
         GlobalCacheKey gck = new GlobalCacheKey(pkgkey);
 
