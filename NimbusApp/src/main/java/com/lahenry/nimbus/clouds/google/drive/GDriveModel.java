@@ -27,13 +27,13 @@ import com.google.api.services.drive.model.File;
 import com.lahenry.nimbus.accountmanager.AccountInfo;
 import com.lahenry.nimbus.accountmanager.AccountManager;
 import com.lahenry.nimbus.clouds.CloudType;
+import com.lahenry.nimbus.clouds.google.drive.io.GDrivePipedStreamActions;
 import com.lahenry.nimbus.clouds.interfaces.ICloudModel;
 import com.lahenry.nimbus.clouds.interfaces.ICloudProgress;
 import com.lahenry.nimbus.clouds.interfaces.ICloudTransfer;
 import com.lahenry.nimbus.io.InputStreamProgress;
-import com.lahenry.nimbus.io.InputStreamProxy;
-import com.lahenry.nimbus.io.OutputStreamProgress;
 import com.lahenry.nimbus.io.PipedStreams;
+import com.lahenry.nimbus.io.interfaces.IPipedStreamActions;
 import com.lahenry.nimbus.mainapp.AppInfo;
 import com.lahenry.nimbus.utils.GlobalCache;
 import com.lahenry.nimbus.utils.GlobalCacheKey;
@@ -41,7 +41,6 @@ import com.lahenry.nimbus.utils.Logit;
 import com.lahenry.nimbus.utils.Tools;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -360,7 +359,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         // https://code.google.com/p/google-api-java-client/wiki/MediaUpload
         // http://stackoverflow.com/questions/25288849/resumable-uploads-google-drive-sdk-for-android-or-java
 
-        LOG.entering("transfer");
+        LOG.entering("transfer", new Object[]{transfer});
 
         try
         {
@@ -458,13 +457,10 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
             LOG.fine("Download size: "+downloadFile.getFileSize());
             LOG.fine(downloadFile.toString());
 
-            //final int CHUNK_SIZE = MediaHttpDownloader.MAXIMUM_CHUNK_SIZE;
-            final int CHUNK_SIZE = MediaHttpUploader.MINIMUM_CHUNK_SIZE;
-
             final Drive.Files.Get request = m_service.files().get(downloadFile.getId());
             request.getMediaHttpDownloader()
                 .setDirectDownloadEnabled(true)
-                .setChunkSize(CHUNK_SIZE)
+                .setChunkSize(256*1024)
                 .setProgressListener(progressListener);
 
             InputStream inputstream;
@@ -473,62 +469,10 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
             {
                 LOG.info("Using piped streams");
 
-                final PipedStreams pipedstreams = new PipedStreams();
-                OutputStream outputStream = pipedstreams.getOutputStream();
+                final PipedStreams pipedstreams = setupPipedStreamsFor_getDownloadStream(request);
 
-                if (true)
-                {
-                    OutputStreamProgress osprog = new OutputStreamProgress(outputStream)
-                    {
-                        @Override
-                        public void progress(long offset, int bytesWritten)
-                        {
-                            //LOG.finer("transfer(): File:'"+name+"' Offset:"+offset+" BytesRead:"+bytesRead);
-                        }
-
-                        @Override
-                        public void trace(String msg)
-                        {
-                            LOG.finer("transfer(): [trace] "+msg);
-                        }
-                    };
-
-                    outputStream = osprog;
-                }
-
-                final OutputStream fos = outputStream;
-
-                Thread thread = new Thread(new Runnable(){
-                    @Override
-                    public void run()
-                    {
-                        try
-                        {
-                            request.executeMediaAndDownloadTo(fos);
-                        }
-                        catch (IOException ex)
-                        {
-                            LOG.throwing("getDownloadStream.run()", ex);
-                        }
-                    }
-                });
-                thread.start();
-
+                // set the inputstream from piped streams
                 inputstream = pipedstreams.getInputStream();
-
-                if (true)
-                {
-                    InputStreamProxy isproxy = new InputStreamProxy(inputstream)
-                    {
-                        @Override
-                        public void close() throws IOException
-                        {
-                            pipedstreams.close();
-                        }
-                    };
-
-                    inputstream = isproxy;
-                }
             }
             else
             {
@@ -545,13 +489,13 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
                     @Override
                     public void progress(long offset, int bytesRead)
                     {
-                        //LOG.finer("getDownloadStream(): File:'"+name+"' Offset:"+offset+" BytesRead:"+bytesRead);
+                        //LOG.finer("File:'"+name+"' Offset:"+offset+" BytesRead:"+bytesRead);
                     }
 
                     @Override
                     public void trace(String msg)
                     {
-                        LOG.finer("getDownloadStream(): [trace] "+msg);
+                        LOG.finer("getDownloadStream() "+msg);
                     }
                 };
 
@@ -566,6 +510,18 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         }
 
         return null;
+    }
+
+    private PipedStreams setupPipedStreamsFor_getDownloadStream(final Drive.Files.Get request) throws IOException
+    {
+        final PipedStreams pipedstreams = new PipedStreams();
+
+        final IPipedStreamActions pipedactions = new GDrivePipedStreamActions(request);
+
+        // redirect the inputstream to the piped streams
+        pipedstreams.fillStream(pipedactions);
+
+        return pipedstreams;
     }
 
     @Override

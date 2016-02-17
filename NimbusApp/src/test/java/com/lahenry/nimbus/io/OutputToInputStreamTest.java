@@ -106,13 +106,6 @@ public class OutputToInputStreamTest
         */
     }
 
-    private OutputToInputStreamTemp getInputStream() throws IOException
-    {
-        final int BUFFER_SIZE = 256*1024;
-        OutputToInputStreamTemp inputstream = new OutputToInputStreamTemp(BUFFER_SIZE, m_istream);
-        return inputstream;
-    }
-
     private void readdata()
     {
         final int BUFFER_SIZE = 128*1024;
@@ -139,7 +132,7 @@ public class OutputToInputStreamTest
                     System.out.println("Streams:"+streamscnt+" Iteration:"+idxcnt);
 
                     m_istream.close();
-                    m_istream = getInputStream();
+                    //m_istream = getInputStream();
                 }
             }
         }

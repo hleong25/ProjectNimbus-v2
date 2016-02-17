@@ -9,8 +9,11 @@ import com.lahenry.nimbus.io.InputStreamProgress;
 import com.lahenry.nimbus.clouds.interfaces.ICloudModel;
 import com.lahenry.nimbus.clouds.interfaces.ICloudProgress;
 import com.lahenry.nimbus.clouds.interfaces.ICloudTransfer;
+import com.lahenry.nimbus.clouds.local.io.LocalInputStreamProxy;
+import com.lahenry.nimbus.clouds.local.io.LocalPipedStreamActions;
 import com.lahenry.nimbus.io.InputStreamProxy;
 import com.lahenry.nimbus.io.PipedStreams;
+import com.lahenry.nimbus.io.interfaces.IPipedStreamActions;
 import com.lahenry.nimbus.utils.GlobalCache;
 import com.lahenry.nimbus.utils.GlobalCacheKey;
 import com.lahenry.nimbus.utils.Histogram;
@@ -141,7 +144,7 @@ public class LocalModel implements ICloudModel<java.io.File>
     @Override
     public void transfer(final ICloudTransfer<?, java.io.File> transfer)
     {
-        LOG.entering("transfering", new Object[]{transfer});
+        LOG.entering("transfer", new Object[]{transfer});
 
         final int BUFFER_SIZE = 256*1024;
         InputStream is = transfer.getInputStream();
@@ -154,13 +157,13 @@ public class LocalModel implements ICloudModel<java.io.File>
                 @Override
                 public void progress(long offset, int bytesRead)
                 {
-                    LOG.finer("transfer(): File:'"+"henry"+"' Offset:"+offset+" BytesRead:"+bytesRead);
+                    //LOG.finer("File:'"+"henry"+"' Offset:"+offset+" BytesRead:"+bytesRead);
                 }
 
                 @Override
                 public void trace(String msg)
                 {
-                    LOG.finer("transfer(): [trace] "+msg);
+                    LOG.finer("transfer() "+msg);
                 }
             };
 
@@ -263,39 +266,28 @@ public class LocalModel implements ICloudModel<java.io.File>
                     @Override
                     public void progress(long offset, int bytesRead)
                     {
-                        //LOG.finer("getDownloadStream(): File:'"+name+"' Offset:"+offset+" BytesRead:"+bytesRead);
+                        //LOG.finer("File:'"+name+"' Offset:"+offset+" BytesRead:"+bytesRead);
                     }
 
                     @Override
                     public void trace(String msg)
                     {
-                        LOG.finer("getDownloadStream(): [trace] "+msg);
+                        LOG.finer("getDownloadStream() "+msg);
                     }
                 };
 
                 inputstream = isprog;
             }
 
-            if (true)
+            if (false)
             {
                 inputstream = new BufferedInputStream(inputstream, BUFFER_SIZE);
             }
-
-            if (true)
+            else
             {
-                final PipedStreams pipedstreams = new PipedStreams();
+                final PipedStreams pipedstreams = setupPipedStreamsFor_getDownloadStream(inputstream);
 
-                InputStreamProxy isproxy = new InputStreamProxy(inputstream)
-                {
-                    @Override
-                    public void close() throws IOException
-                    {
-                        pipedstreams.close();
-                    }
-                };
-
-                pipedstreams.fillStream(inputstream);
-
+                // set the inputstream from piped streams
                 inputstream = pipedstreams.getInputStream();
             }
 
@@ -311,6 +303,20 @@ public class LocalModel implements ICloudModel<java.io.File>
         }
 
         return null;
+    }
+
+    private PipedStreams setupPipedStreamsFor_getDownloadStream(final InputStream inputstream) throws IOException
+    {
+        final PipedStreams pipedstreams = new PipedStreams();
+
+        final InputStreamProxy isproxy = new LocalInputStreamProxy(inputstream, pipedstreams);
+
+        final IPipedStreamActions pipedactions = new LocalPipedStreamActions(inputstream);
+
+        // redirect the inputstream to the piped streams
+        pipedstreams.fillStream(pipedactions);
+
+        return pipedstreams;
     }
 
     @Override
