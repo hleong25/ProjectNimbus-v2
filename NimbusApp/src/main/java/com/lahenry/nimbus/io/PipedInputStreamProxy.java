@@ -4,10 +4,8 @@
  * and open the template in the editor.
  */
 
-package com.lahenry.nimbus.clouds.local.io;
+package com.lahenry.nimbus.io;
 
-import com.lahenry.nimbus.io.InputStreamProxy;
-import com.lahenry.nimbus.io.PipedStreams;
 import com.lahenry.nimbus.utils.Logit;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,14 +14,14 @@ import java.io.InputStream;
  *
  * @author henry
  */
-public class LocalInputStreamProxy
+public class PipedInputStreamProxy
         extends InputStreamProxy
 {
-    private static final Logit LOG = Logit.create(LocalInputStreamProxy.class.getName());
+    private static final Logit LOG = Logit.create(PipedInputStreamProxy.class.getName());
 
     private final PipedStreams m_pipedstreams;
 
-    public LocalInputStreamProxy(InputStream inputstream, PipedStreams pipedstreams)
+    public PipedInputStreamProxy(InputStream inputstream, PipedStreams pipedstreams)
     {
         super(inputstream);
         LOG.entering("<init>");

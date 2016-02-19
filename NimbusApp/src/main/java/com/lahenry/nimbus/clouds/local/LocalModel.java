@@ -9,8 +9,7 @@ import com.lahenry.nimbus.io.InputStreamProgress;
 import com.lahenry.nimbus.clouds.interfaces.ICloudModel;
 import com.lahenry.nimbus.clouds.interfaces.ICloudProgress;
 import com.lahenry.nimbus.clouds.interfaces.ICloudTransfer;
-import com.lahenry.nimbus.clouds.local.io.LocalInputStreamProxy;
-import com.lahenry.nimbus.clouds.local.io.LocalPipedStreamActions;
+import com.lahenry.nimbus.io.PipedStreamActions;
 import com.lahenry.nimbus.io.PipedStreams;
 import com.lahenry.nimbus.io.interfaces.IPipedStreamActions;
 import com.lahenry.nimbus.utils.GlobalCache;
@@ -307,13 +306,8 @@ public class LocalModel implements ICloudModel<java.io.File>
 
     private PipedStreams setupPipedStreamsFor_getDownloadStream(InputStream inputstream) throws IOException
     {
-        final IPipedStreamActions pipedactions = new LocalPipedStreamActions(inputstream);
+        final IPipedStreamActions pipedactions = new PipedStreamActions(inputstream);
         final PipedStreams pipedstreams = new PipedStreams(pipedactions);
-
-        if (false)
-        {
-            inputstream = new LocalInputStreamProxy(inputstream, pipedstreams);
-        }
 
         // redirect the inputstream to the piped streams
         pipedstreams.fillStream();

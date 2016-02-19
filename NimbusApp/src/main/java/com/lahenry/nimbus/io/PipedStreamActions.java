@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package com.lahenry.nimbus.clouds.local.io;
+package com.lahenry.nimbus.io;
 
 import com.lahenry.nimbus.io.interfaces.IPipedStreamActions;
 import com.lahenry.nimbus.utils.Logit;
@@ -17,14 +17,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @author henry
  */
-public class LocalPipedStreamActions
+public class PipedStreamActions
         implements IPipedStreamActions
 {
-    private static final Logit LOG = Logit.create(LocalPipedStreamActions.class.getName());
+    private static final Logit LOG = Logit.create(PipedStreamActions.class.getName());
 
     private final InputStream m_inputstream;
 
-    public LocalPipedStreamActions(InputStream inputstream)
+    public PipedStreamActions(InputStream inputstream)
     {
         m_inputstream = inputstream;
     }
@@ -48,7 +48,7 @@ public class LocalPipedStreamActions
         }
         finally
         {
-            LOG.fine("finally... closing stream");
+            LOG.fine("Finished reading stream. Closing streams.");
             m_inputstream.close();
             pout.close();
         }

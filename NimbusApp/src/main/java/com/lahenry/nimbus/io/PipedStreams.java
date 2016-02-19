@@ -6,7 +6,6 @@
 
 package com.lahenry.nimbus.io;
 
-import com.lahenry.nimbus.clouds.local.io.LocalInputStreamProxy;
 import com.lahenry.nimbus.utils.Logit;
 import java.io.IOException;
 import java.io.PipedInputStream;
@@ -50,7 +49,7 @@ public class PipedStreams
         m_pin  = new PipedInputStream(BUFFERED_SIZE);
         m_pout = new PipedOutputStream(m_pin);
 
-        m_inputstreamproxy = new LocalInputStreamProxy(m_pin, this);
+        m_inputstreamproxy = new PipedInputStreamProxy(m_pin, this);
 
         Runnable runnable = new Runnable()
         {

@@ -21,12 +21,15 @@ import com.lahenry.nimbus.clouds.CloudType;
 import com.lahenry.nimbus.clouds.interfaces.ICloudModel;
 import com.lahenry.nimbus.clouds.interfaces.ICloudProgress;
 import com.lahenry.nimbus.clouds.interfaces.ICloudTransfer;
-import com.lahenry.nimbus.io.InputStreamProgress;
+import com.lahenry.nimbus.io.PipedStreamActions;
+import com.lahenry.nimbus.io.PipedStreams;
+import com.lahenry.nimbus.io.interfaces.IPipedStreamActions;
 import com.lahenry.nimbus.mainapp.AppInfo;
 import com.lahenry.nimbus.utils.GlobalCache;
 import com.lahenry.nimbus.utils.GlobalCacheKey;
 import com.lahenry.nimbus.utils.Logit;
 import com.lahenry.nimbus.utils.Tools;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -376,31 +379,30 @@ public class DropboxModel implements ICloudModel<DbxEntry>
 
         try
         {
+            final int BUFFER_SIZE = 256*1024;
             final String name = getName(downloadFile);
             DbxClient.Downloader downloader = m_client.startGetFile(downloadFile.path, downloadFile.asFile().rev);
             InputStream inputstream = downloader.body;
 
-            // 1. try wrapping inputstream as bufferedinputstream
-            // 2. maybe try to be like LocalModel.getDownloadStream()
-
             if (false)
             {
-                InputStream isprog = new InputStreamProgress(inputstream)
+                try
                 {
-                    @Override
-                    public void progress(long offset, int bytesRead)
-                    {
-                        LOG.finer("File:'"+name+"' Offset:"+offset+" BytesRead:"+bytesRead);
-                    }
+                    final PipedStreams pipedstreams = setupPipedStreamsFor_getDownloadStream(inputstream);
 
-                    @Override
-                    public void trace(String msg)
-                    {
-                        LOG.finer("[trace] "+msg);
-                    }
-                };
+                    // set the inputstream from piped streams
+                    inputstream = pipedstreams.getInputStream();
+                }
+                catch (IOException ex)
+                {
+                    LOG.warning("Failed to set piped streams, not using it.");
+                    LOG.throwing("getDownloadStream", ex);
+                }
+            }
 
-                inputstream = isprog;
+            if (true)
+            {
+                inputstream = new BufferedInputStream(inputstream, BUFFER_SIZE);
             }
 
             return inputstream;
@@ -411,6 +413,18 @@ public class DropboxModel implements ICloudModel<DbxEntry>
         }
 
         return null;
+    }
+
+    private PipedStreams setupPipedStreamsFor_getDownloadStream(InputStream inputstream) throws IOException
+    {
+        // TODO - Refactor PipedStreamActions if it works
+        final IPipedStreamActions pipedactions = new PipedStreamActions(inputstream);
+        final PipedStreams pipedstreams = new PipedStreams(pipedactions);
+
+        // redirect the inputstream to the piped streams
+        pipedstreams.fillStream();
+
+        return pipedstreams;
     }
 
     @Override
