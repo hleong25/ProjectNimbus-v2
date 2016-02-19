@@ -21,6 +21,8 @@ public abstract class InputStreamProxy
 
     protected final InputStream m_istream;
 
+    protected boolean m_debug = true;
+
     public InputStreamProxy(InputStream istream)
     {
         super();
@@ -35,66 +37,71 @@ public abstract class InputStreamProxy
         m_istream = null;
     }
 
+    public void setDebug(boolean showDebug)
+    {
+        m_debug = showDebug;
+    }
+
     @Override
     public int read() throws IOException
     {
-        LOG.entering("read");
+        if (m_debug) LOG.entering("read");
         return m_istream.read();
     }
 
     @Override
     public int read(byte[] b) throws IOException
     {
-        LOG.entering("read(b)");
+        if (m_debug) LOG.entering("read(b)");
         return m_istream.read(b);
     }
 
     @Override
     public int read(byte[] b, int off, int len) throws IOException
     {
-        LOG.entering("read(b,off,len)");
+        if (m_debug) LOG.entering("read(b,off,len)");
         return m_istream.read(b, off, len);
     }
 
     @Override
     public int available() throws IOException
     {
-        LOG.entering("available");
+        if (m_debug) LOG.entering("available");
         return m_istream.available();
     }
 
     @Override
     public void close() throws IOException
     {
-        LOG.entering("close");
+        if (m_debug) LOG.entering("close");
         m_istream.close();
     }
 
     @Override
     public synchronized void reset() throws IOException
     {
-        LOG.entering("reset");
+        if (m_debug) LOG.entering("reset");
         m_istream.reset();
     }
 
     @Override
     public synchronized void mark(int readlimit)
     {
-        LOG.entering("mark");
+        if (m_debug) LOG.entering("mark");
         m_istream.mark(readlimit);
     }
 
     @Override
     public boolean markSupported()
     {
-        LOG.entering("markSupported");
+        if (m_debug) LOG.entering("markSupported");
         return m_istream.markSupported();
     }
 
     @Override
     public long skip(long n) throws IOException
     {
-        LOG.entering("skip");
+        if (m_debug) LOG.entering("skip");
         return m_istream.skip(n);
     }
 

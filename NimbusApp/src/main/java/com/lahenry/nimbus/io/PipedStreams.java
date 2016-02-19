@@ -6,6 +6,7 @@
 
 package com.lahenry.nimbus.io;
 
+import com.lahenry.nimbus.clouds.local.io.LocalInputStreamProxy;
 import com.lahenry.nimbus.utils.Logit;
 import java.io.IOException;
 import java.io.PipedInputStream;
@@ -13,6 +14,7 @@ import java.io.PipedOutputStream;
 import com.lahenry.nimbus.io.interfaces.IPipedStreamActions;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Class PipedStreams
@@ -33,10 +35,11 @@ public class PipedStreams
     protected final IPipedStreamActions m_pipedactions;
     protected final PipedOutputStream m_pout;
     protected final PipedInputStream m_pin;
+    protected final InputStream m_inputstreamproxy;
 
     protected final Thread m_thread;
 
-    protected volatile boolean m_abort = false;
+    protected AtomicBoolean m_abort = new AtomicBoolean(false);
 
     public PipedStreams(IPipedStreamActions pipedactions) throws IOException
     {
@@ -46,6 +49,8 @@ public class PipedStreams
 
         m_pin  = new PipedInputStream(BUFFERED_SIZE);
         m_pout = new PipedOutputStream(m_pin);
+
+        m_inputstreamproxy = new LocalInputStreamProxy(m_pin, this);
 
         Runnable runnable = new Runnable()
         {
@@ -89,7 +94,7 @@ public class PipedStreams
 
     public InputStream getInputStream()
     {
-        return m_pin;
+        return m_inputstreamproxy;
     }
 
     public OutputStream getOutputStream()
@@ -106,46 +111,43 @@ public class PipedStreams
     {
         LOG.entering("close");
 
-        if (m_abort)
+        if (m_abort.get())
         {
             LOG.warning("Already closed");
             return;
         }
 
-        m_abort = true;
+        m_abort.set(true);
 
-        if (m_thread != null)
+        try
         {
-            try
-            {
-                LOG.fine("Waiting for thread to stop");
-                m_thread.join(1000);
-                m_thread.interrupt();
-                LOG.fine("Thread stopped");
-            }
-            catch (InterruptedException ex)
-            {
-                LOG.throwing("close", ex);
-            }
+            //LOG.fine("Waiting for thread to stop");
+            m_thread.join(1000);
         }
-
-        if (true)
+        catch (InterruptedException ex)
         {
-            try
-            {
-                LOG.fine("Closing pipe output stream");
-                m_pout.close();
-            }
-            catch (IOException ex)
-            {
-                LOG.throwing("close", ex);
-            }
+            LOG.throwing("close", ex);
+        }
+        finally
+        {
+            // calling thread.interrupt() should be no-op
+            m_thread.interrupt();
         }
 
         try
         {
             LOG.fine("Closing pipe input stream");
             m_pin.close();
+        }
+        catch (IOException ex)
+        {
+            LOG.throwing("close", ex);
+        }
+
+        try
+        {
+            LOG.fine("Closing pipe output stream");
+            m_pout.close();
         }
         catch (IOException ex)
         {

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -64,7 +65,12 @@ public class BlockingInputStreamQ
                 {
                     while (!m_abort.get())
                     {
-                        ReadArgs args = m_readArgQ.take();
+                        ReadArgs args = m_readArgQ.poll(100, TimeUnit.MILLISECONDS);
+
+                        if (args == null)
+                        {
+                            continue;
+                        }
 
                         int bytesRead = m_istream.read(args.buffer, args.offset, args.length);
 
@@ -74,10 +80,24 @@ public class BlockingInputStreamQ
 
                         m_returnArgQ.put(returnArgs);
                     }
+
+                    //m_istream.close();
                 }
                 catch (IOException | InterruptedException ex)
                 {
                     LOG.throwing("thread", ex);
+                }
+                finally
+                {
+                    try
+                    {
+                        LOG.fine("Closing stream");
+                        m_istream.close();
+                    }
+                    catch (IOException ex)
+                    {
+                        LOG.throwing("thread", ex);
+                    }
                 }
             }
         };
@@ -91,6 +111,21 @@ public class BlockingInputStreamQ
         super.finalize();
 
         this.close();
+    }
+
+    @Override
+    public int read() throws IOException
+    {
+        byte[] b = new byte[1];
+        int bytesRead = this.read(b, 0, b.length);
+        if (bytesRead != -1)
+        {
+            return b[0];
+        }
+        else
+        {
+            return bytesRead;
+        }
     }
 
     @Override
@@ -129,7 +164,23 @@ public class BlockingInputStreamQ
     {
         super.close();
 
+        LOG.entering("close");
+
         m_abort.set(true);
-        m_thread.interrupt();
+        
+        try
+        {
+            // wait up to 1 sec before interrupting it
+            m_thread.join(1000);
+        }
+        catch (InterruptedException ex)
+        {
+            LOG.throwing("close", ex);
+        }
+        finally
+        {
+            // calling thread.interrupt() should be no-op
+            m_thread.interrupt();
+        }
     }
 }

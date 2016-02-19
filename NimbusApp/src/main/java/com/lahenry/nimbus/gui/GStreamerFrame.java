@@ -13,10 +13,6 @@ import com.lahenry.nimbus.gui.helpers.BusyTaskCursor;
 import com.lahenry.nimbus.mainapp.AppInfo;
 import com.lahenry.nimbus.utils.Logit;
 import java.awt.Component;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicBoolean;
 import org.gstreamer.swing.VideoComponent;
 
 /**
@@ -27,7 +23,7 @@ public class GStreamerFrame extends javax.swing.JFrame
 {
     private static final Logit LOG = Logit.create(GStreamerFrame.class.getName());
 
-    private GStreamerMedia m_gst;
+    private GStreamerMedia<?, ?> m_gst;
 
     /**
      * Creates new form GStreamerFrame

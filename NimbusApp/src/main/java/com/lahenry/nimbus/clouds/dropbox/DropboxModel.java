@@ -378,23 +378,32 @@ public class DropboxModel implements ICloudModel<DbxEntry>
         {
             final String name = getName(downloadFile);
             DbxClient.Downloader downloader = m_client.startGetFile(downloadFile.path, downloadFile.asFile().rev);
-            InputStream is = downloader.body;
-            InputStream isprog = new InputStreamProgress(is)
+            InputStream inputstream = downloader.body;
+
+            // 1. try wrapping inputstream as bufferedinputstream
+            // 2. maybe try to be like LocalModel.getDownloadStream()
+
+            if (false)
             {
-                @Override
-                public void progress(long offset, int bytesRead)
+                InputStream isprog = new InputStreamProgress(inputstream)
                 {
-                    LOG.finer("File:'"+name+"' Offset:"+offset+" BytesRead:"+bytesRead);
-                }
+                    @Override
+                    public void progress(long offset, int bytesRead)
+                    {
+                        LOG.finer("File:'"+name+"' Offset:"+offset+" BytesRead:"+bytesRead);
+                    }
 
-                @Override
-                public void trace(String msg)
-                {
-                    LOG.finer("[trace] "+msg);
-                }
-            };
+                    @Override
+                    public void trace(String msg)
+                    {
+                        LOG.finer("[trace] "+msg);
+                    }
+                };
 
-            return isprog;
+                inputstream = isprog;
+            }
+
+            return inputstream;
         }
         catch (DbxException ex)
         {

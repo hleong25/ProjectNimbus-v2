@@ -29,13 +29,17 @@ public class LocalInputStreamProxy
         LOG.entering("<init>");
 
         m_pipedstreams = pipedstreams;
+
+        this.setDebug(false);
     }
 
     @Override
     public void close() throws IOException
     {
+        super.close();
+
         LOG.entering("close");
-        m_istream.close();
+        m_pipedstreams.close();
     }
 
 }

@@ -157,16 +157,13 @@ public class CloudChannelSrc<T, CC extends ICloudController<T>>
     {
         LOG.entering("close");
 
-        if (m_stream != null)
+        try
         {
-            try
-            {
-                m_stream.close();
-            }
-            catch (IOException ex)
-            {
-                LOG.throwing("close", ex);
-            }
+            m_stream.close();
+        }
+        catch (IOException ex)
+        {
+            LOG.throwing("close", ex);
         }
     }
 }

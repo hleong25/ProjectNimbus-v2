@@ -11,6 +11,7 @@ import com.lahenry.nimbus.utils.Logit;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PipedOutputStream;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  *
@@ -29,7 +30,7 @@ public class LocalPipedStreamActions
     }
 
     @Override
-    public void onFillStream(boolean abort, final PipedOutputStream pout) throws IOException
+    public void onFillStream(AtomicBoolean abort, final PipedOutputStream pout) throws IOException
     {
         final int BUFFERED_SIZE = 256*1024;
         //long total = 0;
@@ -39,7 +40,7 @@ public class LocalPipedStreamActions
 
         try
         {
-            while ((!abort) && ((bytesRead = m_inputstream.read(buffer)) > 0))
+            while ((!abort.get()) && ((bytesRead = m_inputstream.read(buffer)) > 0))
             {
                 pout.write(buffer, 0, bytesRead);
                 pout.flush();
@@ -47,6 +48,7 @@ public class LocalPipedStreamActions
         }
         finally
         {
+            LOG.fine("finally... closing stream");
             m_inputstream.close();
             pout.close();
         }

@@ -13,6 +13,7 @@ import com.lahenry.nimbus.utils.Logit;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PipedOutputStream;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  *
@@ -31,7 +32,7 @@ public class GDrivePipedStreamActions
     }
 
     @Override
-    public void onFillStream(boolean abort, final PipedOutputStream pout) throws IOException
+    public void onFillStream(AtomicBoolean abort, final PipedOutputStream pout) throws IOException
     {
         OutputStream outputstream = pout;
 

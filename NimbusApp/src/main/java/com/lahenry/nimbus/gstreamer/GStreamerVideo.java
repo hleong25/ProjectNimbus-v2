@@ -45,6 +45,14 @@ public class GStreamerVideo<T, CC extends ICloudController<T>>
     }
 
     @Override
+    protected void finalize() throws Throwable
+    {
+        super.finalize();
+
+        close();
+    }
+
+    @Override
     public boolean init()
     {
         DecodeBin2 decodeBin = (DecodeBin2) createElement("decodebin2");

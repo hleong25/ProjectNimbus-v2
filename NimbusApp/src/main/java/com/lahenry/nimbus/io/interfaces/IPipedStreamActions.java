@@ -7,6 +7,7 @@ package com.lahenry.nimbus.io.interfaces;
 
 import java.io.IOException;
 import java.io.PipedOutputStream;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  *
@@ -14,6 +15,6 @@ import java.io.PipedOutputStream;
  */
 public interface IPipedStreamActions
 {
-    void onFillStream(boolean abort, final PipedOutputStream pout) throws IOException;
+    void onFillStream(AtomicBoolean abort, final PipedOutputStream pout) throws IOException;
     void onClose() throws IOException;
 }
