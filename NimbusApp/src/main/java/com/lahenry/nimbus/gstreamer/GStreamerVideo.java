@@ -7,9 +7,6 @@ package com.lahenry.nimbus.gstreamer;
 
 import com.lahenry.nimbus.clouds.interfaces.ICloudController;
 import com.lahenry.nimbus.utils.Logit;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
 import org.gstreamer.Bin;
 import org.gstreamer.Bus;
 import org.gstreamer.Caps;
@@ -34,7 +31,7 @@ public class GStreamerVideo<T, CC extends ICloudController<T>>
 {
     private static final Logit LOG = Logit.create(GStreamerVideo.class.getName());
 
-    protected final Element m_istreamsrc;
+    protected final CloudChannelSrc<T, CC> m_istreamsrc;
     protected final VideoComponent m_videocomponent;
 
     public GStreamerVideo(String name, CC controller, T file)
@@ -50,12 +47,10 @@ public class GStreamerVideo<T, CC extends ICloudController<T>>
     @Override
     public boolean init()
     {
-        Element src = new CloudChannelSrc<T, CC>(m_name, m_controller, m_file);
-
         DecodeBin2 decodeBin = (DecodeBin2) createElement("decodebin2");
 
-        m_pipe.addMany(src, decodeBin);
-        src.link(decodeBin);
+        m_pipe.addMany(m_istreamsrc, decodeBin);
+        m_istreamsrc.link(decodeBin);
 
         final Bin audiobin = new Bin("audio bin");
 
@@ -143,6 +138,15 @@ public class GStreamerVideo<T, CC extends ICloudController<T>>
     public VideoComponent getVideoComponent()
     {
         return m_videocomponent;
+    }
+
+    @Override
+    public void close()
+    {
+        super.close();
+        LOG.entering("close");
+
+        m_istreamsrc.close();
     }
 
 }

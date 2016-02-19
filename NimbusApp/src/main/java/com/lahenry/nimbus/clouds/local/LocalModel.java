@@ -11,7 +11,6 @@ import com.lahenry.nimbus.clouds.interfaces.ICloudProgress;
 import com.lahenry.nimbus.clouds.interfaces.ICloudTransfer;
 import com.lahenry.nimbus.clouds.local.io.LocalInputStreamProxy;
 import com.lahenry.nimbus.clouds.local.io.LocalPipedStreamActions;
-import com.lahenry.nimbus.io.InputStreamProxy;
 import com.lahenry.nimbus.io.PipedStreams;
 import com.lahenry.nimbus.io.interfaces.IPipedStreamActions;
 import com.lahenry.nimbus.utils.GlobalCache;
@@ -257,7 +256,7 @@ public class LocalModel implements ICloudModel<java.io.File>
             final int BUFFER_SIZE = 256*1024;
             InputStream inputstream = new FileInputStream(downloadFile);
 
-            if (true)
+            if (false)
             {
                 final String name = getName(downloadFile);
 
@@ -279,16 +278,17 @@ public class LocalModel implements ICloudModel<java.io.File>
                 inputstream = isprog;
             }
 
-            if (false)
-            {
-                inputstream = new BufferedInputStream(inputstream, BUFFER_SIZE);
-            }
-            else
+            if (true)
             {
                 final PipedStreams pipedstreams = setupPipedStreamsFor_getDownloadStream(inputstream);
 
                 // set the inputstream from piped streams
                 inputstream = pipedstreams.getInputStream();
+            }
+
+            if (false)
+            {
+                inputstream = new BufferedInputStream(inputstream, BUFFER_SIZE);
             }
 
             return inputstream;
@@ -305,16 +305,18 @@ public class LocalModel implements ICloudModel<java.io.File>
         return null;
     }
 
-    private PipedStreams setupPipedStreamsFor_getDownloadStream(final InputStream inputstream) throws IOException
+    private PipedStreams setupPipedStreamsFor_getDownloadStream(InputStream inputstream) throws IOException
     {
-        final PipedStreams pipedstreams = new PipedStreams();
-
-        final InputStreamProxy isproxy = new LocalInputStreamProxy(inputstream, pipedstreams);
-
         final IPipedStreamActions pipedactions = new LocalPipedStreamActions(inputstream);
+        final PipedStreams pipedstreams = new PipedStreams(pipedactions);
+
+        if (false)
+        {
+            inputstream = new LocalInputStreamProxy(inputstream, pipedstreams);
+        }
 
         // redirect the inputstream to the piped streams
-        pipedstreams.fillStream(pipedactions);
+        pipedstreams.fillStream();
 
         return pipedstreams;
     }

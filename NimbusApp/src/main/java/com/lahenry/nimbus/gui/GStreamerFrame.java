@@ -13,8 +13,10 @@ import com.lahenry.nimbus.gui.helpers.BusyTaskCursor;
 import com.lahenry.nimbus.mainapp.AppInfo;
 import com.lahenry.nimbus.utils.Logit;
 import java.awt.Component;
-import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.gstreamer.swing.VideoComponent;
 
 /**
@@ -57,25 +59,6 @@ public class GStreamerFrame extends javax.swing.JFrame
 
         LOG.fine("Creating new GStreamerVideo");
         frame.m_gst = new GStreamerVideo<T, CC>(title, controller, file);
-
-        frame.setupVideo();
-
-        showAndPlay(parent, frame);
-    }
-
-    public static void showVideo1(final Component parent, final String title, final InputStream istream)
-    {
-        LOG.entering("showVideo", new Object[]{istream});
-
-        LOG.fine("Creating new GStreamerFrame");
-        final GStreamerFrame frame = new GStreamerFrame();
-        frame.setTitle(title);
-
-        InputStream largestream = new BufferedInputStream(istream, 5*1024*1024);
-
-        LOG.fine("Creating new GStreamerVideo");
-        //frame.m_gst = new GStreamerVideo(title, largestream);
-        //frame.m_gst = new GStreamerVideo(title, istream);
 
         frame.setupVideo();
 

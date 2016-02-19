@@ -37,16 +37,25 @@ public class LocalPipedStreamActions
 
         byte[] buffer = new byte[BUFFERED_SIZE];
 
-        while ((!abort) && ((bytesRead = m_inputstream.read(buffer)) > 0))
+        try
         {
-            pout.write(buffer, 0, bytesRead);
-            //total += bytesRead;
+            while ((!abort) && ((bytesRead = m_inputstream.read(buffer)) > 0))
+            {
+                pout.write(buffer, 0, bytesRead);
+                pout.flush();
+            }
+        }
+        finally
+        {
+            m_inputstream.close();
+            pout.close();
         }
     }
 
     @Override
     public void onClose() throws IOException
     {
-        m_inputstream.close();
+        LOG.entering("onClose");
+        //m_inputstream.close();
     }
 }

@@ -512,14 +512,13 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         return null;
     }
 
-    private PipedStreams setupPipedStreamsFor_getDownloadStream(final Drive.Files.Get request) throws IOException
+    private PipedStreams setupPipedStreamsFor_getDownloadStream(Drive.Files.Get request) throws IOException
     {
-        final PipedStreams pipedstreams = new PipedStreams();
-
         final IPipedStreamActions pipedactions = new GDrivePipedStreamActions(request);
+        final PipedStreams pipedstreams = new PipedStreams(pipedactions);
 
         // redirect the inputstream to the piped streams
-        pipedstreams.fillStream(pipedactions);
+        pipedstreams.fillStream();
 
         return pipedstreams;
     }

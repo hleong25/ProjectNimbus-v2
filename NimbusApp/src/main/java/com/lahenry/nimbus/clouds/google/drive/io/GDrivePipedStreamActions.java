@@ -62,7 +62,7 @@ public class GDrivePipedStreamActions
     @Override
     public void onClose() throws IOException
     {
-        // do nothing
+        LOG.entering("close");
     }
 
 }

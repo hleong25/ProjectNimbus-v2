@@ -6,14 +6,12 @@
 package com.lahenry.nimbus.gstreamer;
 
 import com.lahenry.nimbus.clouds.interfaces.ICloudController;
+import com.lahenry.nimbus.io.BlockingInputStreamQ;
 import com.lahenry.nimbus.utils.Logit;
-import java.io.BufferedInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.gstreamer.Buffer;
 import org.gstreamer.ClockTime;
 import org.gstreamer.FlowReturn;
@@ -55,22 +53,26 @@ public class CloudChannelSrc<T, CC extends ICloudController<T>>
         setFormat(Format.BYTES);
     }
 
+    @Override
+    protected void finalize() throws Throwable
+    {
+        super.finalize();
+
+        close();
+    }
+
     private void setInputStream()
     {
         LOG.entering("setInputStream");
 
-        final boolean useLargeCache = false;
-
         InputStream istream = m_controller.getDownloadStream(m_file);
 
-        if (useLargeCache)
+        if (true)
         {
-            // use large cache
-            int mb = 1024 * 1024;
-            istream = new BufferedInputStream(istream, 1*mb);
+            istream = new BlockingInputStreamQ(istream);
         }
 
-        istream = m_stream;
+        m_stream = istream;
     }
 
     private void readFully(long offset, int size, Buffer buffer) throws IOException
@@ -125,7 +127,7 @@ public class CloudChannelSrc<T, CC extends ICloudController<T>>
     @Override
     protected boolean srcSeek(GstSegmentStruct segment)
     {
-        LOG.entering("srcSeek", new Object[]{segment});
+        //LOG.entering("srcSeek", new Object[]{segment});
 
         // Always return true for non-seekable channels, otherwise the sink
         // doesn't receive any segments
@@ -150,4 +152,21 @@ public class CloudChannelSrc<T, CC extends ICloudController<T>>
     {
 		this.lock = lock;
 	}
+
+    public void close()
+    {
+        LOG.entering("close");
+
+        if (m_stream != null)
+        {
+            try
+            {
+                m_stream.close();
+            }
+            catch (IOException ex)
+            {
+                LOG.throwing("close", ex);
+            }
+        }
+    }
 }

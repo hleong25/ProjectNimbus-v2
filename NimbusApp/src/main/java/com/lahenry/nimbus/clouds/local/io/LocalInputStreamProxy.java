@@ -26,6 +26,7 @@ public class LocalInputStreamProxy
     public LocalInputStreamProxy(InputStream inputstream, PipedStreams pipedstreams)
     {
         super(inputstream);
+        LOG.entering("<init>");
 
         m_pipedstreams = pipedstreams;
     }
@@ -33,6 +34,7 @@ public class LocalInputStreamProxy
     @Override
     public void close() throws IOException
     {
+        LOG.entering("close");
         m_istream.close();
     }
 

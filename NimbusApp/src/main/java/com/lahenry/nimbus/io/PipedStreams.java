@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import com.lahenry.nimbus.io.interfaces.IPipedStreamActions;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * Class PipedStreams
@@ -28,42 +30,39 @@ public class PipedStreams
 {
     private static final Logit LOG = Logit.create(PipedStreams.class.getName());
 
-    protected PipedOutputStream m_pout;
-    protected PipedInputStream m_pin;
+    protected final IPipedStreamActions m_pipedactions;
+    protected final PipedOutputStream m_pout;
+    protected final PipedInputStream m_pin;
 
-    protected Thread m_thread = null;
+    protected final Thread m_thread;
 
     protected volatile boolean m_abort = false;
 
-    public PipedStreams() throws IOException
+    public PipedStreams(IPipedStreamActions pipedactions) throws IOException
     {
         final int BUFFERED_SIZE = 256*1024;
 
-        m_pout = new PipedOutputStream();
-        m_pin = new PipedInputStream(m_pout, BUFFERED_SIZE);
-    }
+        m_pipedactions = pipedactions;
 
-    public PipedInputStream getInputStream()
-    {
-        return m_pin;
-    }
+        m_pin  = new PipedInputStream(BUFFERED_SIZE);
+        m_pout = new PipedOutputStream(m_pin);
 
-    public PipedOutputStream getOutputStream()
-    {
-        return m_pout;
-    }
-
-    public void fillStream(final IPipedStreamActions iface)
-    {
         Runnable runnable = new Runnable()
         {
+            @Override
+            protected void finalize() throws Throwable
+            {
+                super.finalize();
+                LOG.entering("fillStream.finalize");
+            }
+
             @Override
             public void run()
             {
                 try
                 {
-                    iface.onFillStream(m_abort, m_pout);
-                    iface.onClose();
+                    m_pipedactions.onFillStream(m_abort, m_pout);
+                    m_pipedactions.onClose();
                 }
                 catch (IOException ex)
                 {
@@ -77,6 +76,29 @@ public class PipedStreams
         };
 
         m_thread = new Thread(runnable);
+    }
+
+    @Override
+    protected void finalize() throws Throwable
+    {
+        super.finalize();
+        LOG.entering("finalize");
+
+        close();
+    }
+
+    public InputStream getInputStream()
+    {
+        return m_pin;
+    }
+
+    public OutputStream getOutputStream()
+    {
+        return m_pout;
+    }
+
+    public void fillStream()
+    {
         m_thread.start();
     }
 
@@ -92,12 +114,12 @@ public class PipedStreams
 
         m_abort = true;
 
-        if (m_thread == null)
+        if (m_thread != null)
         {
             try
             {
                 LOG.fine("Waiting for thread to stop");
-                m_thread.join(5000);
+                m_thread.join(1000);
                 m_thread.interrupt();
                 LOG.fine("Thread stopped");
             }
@@ -107,22 +129,29 @@ public class PipedStreams
             }
         }
 
+        if (true)
+        {
+            try
+            {
+                LOG.fine("Closing pipe output stream");
+                m_pout.close();
+            }
+            catch (IOException ex)
+            {
+                LOG.throwing("close", ex);
+            }
+        }
+
         try
         {
-            m_pout.close();
+            LOG.fine("Closing pipe input stream");
+            m_pin.close();
         }
         catch (IOException ex)
         {
             LOG.throwing("close", ex);
         }
 
-        //try
-        //{
-        //    m_pin.close();
-        //}
-        //catch (IOException ex)
-        //{
-        //    LOG.throwing("close", ex);
-        //}
+        LOG.exiting("close");
     }
 }

@@ -27,10 +27,10 @@ public class GStreamerFrameTest
     @Test
     public void testShowVideo()
     {
-        String filename = "/home/henry/Videos/SampleVideo_720x480_20mb.mkv";
-        File file = m_controller.getItemById(filename, false);
+        //String filename = "/home/henry/Videos/SampleVideo_720x480_20mb.mkv";
+        //File file = m_controller.getItemById(filename, false);
 
-        GStreamerFrame.showVideo(null, file.getName(), m_controller, file);
+        //GStreamerFrame.showVideo(null, file.getName(), m_controller, file);
 
     }
 

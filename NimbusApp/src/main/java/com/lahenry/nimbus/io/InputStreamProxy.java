@@ -23,18 +23,79 @@ public abstract class InputStreamProxy
 
     public InputStreamProxy(InputStream istream)
     {
+        super();
+
+        LOG.entering("<init>", new Object[]{istream});
         m_istream = istream;
     }
 
-    public InputStreamProxy()
+    protected InputStreamProxy()
     {
-        this.m_istream = null;
+        LOG.entering("<init>");
+        m_istream = null;
     }
 
     @Override
     public int read() throws IOException
     {
+        LOG.entering("read");
         return m_istream.read();
+    }
+
+    @Override
+    public int read(byte[] b) throws IOException
+    {
+        LOG.entering("read(b)");
+        return m_istream.read(b);
+    }
+
+    @Override
+    public int read(byte[] b, int off, int len) throws IOException
+    {
+        LOG.entering("read(b,off,len)");
+        return m_istream.read(b, off, len);
+    }
+
+    @Override
+    public int available() throws IOException
+    {
+        LOG.entering("available");
+        return m_istream.available();
+    }
+
+    @Override
+    public void close() throws IOException
+    {
+        LOG.entering("close");
+        m_istream.close();
+    }
+
+    @Override
+    public synchronized void reset() throws IOException
+    {
+        LOG.entering("reset");
+        m_istream.reset();
+    }
+
+    @Override
+    public synchronized void mark(int readlimit)
+    {
+        LOG.entering("mark");
+        m_istream.mark(readlimit);
+    }
+
+    @Override
+    public boolean markSupported()
+    {
+        LOG.entering("markSupported");
+        return m_istream.markSupported();
+    }
+
+    @Override
+    public long skip(long n) throws IOException
+    {
+        LOG.entering("skip");
+        return m_istream.skip(n);
     }
 
 }
