@@ -31,7 +31,7 @@ public class GStreamerVideo<T, CC extends ICloudController<T>>
 {
     private static final Logit LOG = Logit.create(GStreamerVideo.class.getName());
 
-    protected final CloudChannelSrc<T, CC> m_istreamsrc;
+    protected final CloudChannelSrc<T, CC> m_source;
     protected final VideoComponent m_videocomponent;
 
     public GStreamerVideo(String name, CC controller, T file)
@@ -40,7 +40,7 @@ public class GStreamerVideo<T, CC extends ICloudController<T>>
 
         LOG.entering("<init>", new Object[]{name, controller, file});
 
-        m_istreamsrc = new CloudChannelSrc<T, CC>(m_name, m_controller, m_file);
+        m_source = new CloudChannelSrc<T, CC>(m_name, m_controller, m_file);
         m_videocomponent = new VideoComponent();
     }
 
@@ -57,8 +57,8 @@ public class GStreamerVideo<T, CC extends ICloudController<T>>
     {
         DecodeBin2 decodeBin = (DecodeBin2) createElement("decodebin2");
 
-        m_pipe.addMany(m_istreamsrc, decodeBin);
-        m_istreamsrc.link(decodeBin);
+        m_pipe.addMany(m_source, decodeBin);
+        m_source.link(decodeBin);
 
         final Bin audiobin = new Bin("audio bin");
 
@@ -134,7 +134,8 @@ public class GStreamerVideo<T, CC extends ICloudController<T>>
         bus.connect(new Bus.EOS() {
             @Override
             public void endOfStream(GstObject source) {
-                m_pipe.stop();
+                //m_pipe.stop();
+                m_source.close();
             }
         });
 
@@ -154,7 +155,7 @@ public class GStreamerVideo<T, CC extends ICloudController<T>>
         super.close();
         LOG.entering("close");
 
-        m_istreamsrc.close();
+        m_source.close();
     }
 
 }

@@ -139,6 +139,11 @@ public class BlockingInputStreamQ
     {
         //LOG.entering("read");
 
+        if (m_abort.get())
+        {
+            return -1;
+        }
+
         try
         {
             ReadArgs readArgs = new ReadArgs();

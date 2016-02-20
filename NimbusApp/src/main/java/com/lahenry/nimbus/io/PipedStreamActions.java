@@ -48,6 +48,9 @@ public class PipedStreamActions
         }
         finally
         {
+            // TODO: Close stream in cases
+            //       1. Closing window
+            //       2. Finish streaming
             LOG.fine("Finished reading stream. Closing streams.");
             m_inputstream.close();
             pout.close();

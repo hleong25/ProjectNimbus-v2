@@ -133,6 +133,16 @@ public class PipedStreams
             m_thread.interrupt();
         }
 
+        //try
+        //{
+        //    LOG.fine("Closing proxy input stream");
+        //    m_inputstreamproxy.close();
+        //}
+        //catch (IOException ex)
+        //{
+        //    LOG.throwing("close", ex);
+        //}
+
         try
         {
             LOG.fine("Closing pipe input stream");

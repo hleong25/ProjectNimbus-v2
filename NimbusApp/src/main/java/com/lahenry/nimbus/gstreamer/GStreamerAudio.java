@@ -7,7 +7,6 @@ package com.lahenry.nimbus.gstreamer;
 
 import com.lahenry.nimbus.clouds.interfaces.ICloudController;
 import com.lahenry.nimbus.utils.Logit;
-import java.io.InputStream;
 import org.gstreamer.Bin;
 import org.gstreamer.Bus;
 import org.gstreamer.Caps;
@@ -30,6 +29,8 @@ public class GStreamerAudio<T, CC extends ICloudController<T>>
 {
     private static final Logit LOG = Logit.create(GStreamerAudio.class.getName());
 
+    protected CloudChannelSrc<T, CC> m_source = null;
+
     public GStreamerAudio(String name, CC controller, T file)
     {
         super(name, controller, file);
@@ -40,11 +41,11 @@ public class GStreamerAudio<T, CC extends ICloudController<T>>
     @Override
     public boolean init()
     {
-        Element src = new CloudChannelSrc<T, CC>(m_name, m_controller, m_file);
+        m_source = new CloudChannelSrc<T, CC>(m_name, m_controller, m_file);
         DecodeBin2 decodeBin = (DecodeBin2) ElementFactory.make("decodebin2", "Decode Bin");
 
-        m_pipe.addMany(src, decodeBin);
-        src.link(decodeBin);
+        m_pipe.addMany(m_source, decodeBin);
+        m_source.link(decodeBin);
 
         /* create audio output */
         final Bin audioBin = new Bin("Audio Bin");
@@ -99,6 +100,7 @@ public class GStreamerAudio<T, CC extends ICloudController<T>>
             @Override
             public void endOfStream(GstObject source) {
                 LOG.info("Bus.EOS().endOfStream() Got EOS!");
+                m_source.close();
             }
 
         });
@@ -122,6 +124,15 @@ public class GStreamerAudio<T, CC extends ICloudController<T>>
         });
 
         return true;
+    }
+
+    @Override
+    public void close()
+    {
+        super.close();
+        LOG.entering("close");
+
+        m_source.close();
     }
 
 }

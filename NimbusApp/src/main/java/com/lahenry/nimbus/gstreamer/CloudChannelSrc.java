@@ -87,6 +87,7 @@ public class CloudChannelSrc<T, CC extends ICloudController<T>>
 
         if (bytesRead < 0)
         {
+            //m_stream.close();
             throw new EOFException();
         }
 
