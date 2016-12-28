@@ -8,6 +8,6 @@ It would provide a unified experience on all cloud storage platforms by adding f
 
 Future features:
 
--automatic encryption on upload, auto decryption on download
+- automatic encryption on upload, auto decryption on download
 - split file into multiple segements and upload to multiple accounts so it would be scattered
 - streaming audio and video files
